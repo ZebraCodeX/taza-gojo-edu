@@ -1,0 +1,92 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: tazagojo
+      POSTGRES_USER: tazagojo
+      POSTGRES_PASSWORD: tazagojo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tazagojo"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    # Channel layer + agent task queue both rely on Redis in production.
+    # Local dev falls back to an in-memory layer and Celery-free polling, so
+    # this is optional for single-process testing.
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    command: >
+      bash -c "python manage.py migrate --noinput &&
+               python manage.py seed_core &&
+               python manage.py seed_materials &&
+               daphne -b 0.0.0.0 -p 8000 config.asgi:application"
+    environment:
+      DJANGO_SECRET_KEY: change-me-in-production
+      DJANGO_DEBUG: "true"
+      DJANGO_ALLOWED_HOSTS: "*"
+      DATABASE_URL: postgres://tazagojo:tazagojo@db:5432/tazagojo
+      REDIS_URL: redis://redis:6379/0
+      MEDIA_SERVER_URL: ws://mediaserver:9000
+      TURN_SERVERS: '[]'
+      AI_PROVIDER: mock
+      AI_API_KEY: ""
+      AI_API_URL: ""
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  agents:
+    build: ./backend
+    command: python manage.py run_agents
+    environment:
+      DJANGO_SECRET_KEY: change-me-in-production
+      DJANGO_DEBUG: "true"
+      DATABASE_URL: postgres://tazagojo:tazagojo@db:5432/tazagojo
+      REDIS_URL: redis://redis:6379/0
+      AI_PROVIDER: mock
+      AI_API_KEY: ""
+      AI_API_URL: ""
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ""
+    command: npx vite preview --host 0.0.0.0 --port 4173
+    environment:
+      VITE_API_URL: ""
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
+
+  # Optional hardware-accelerated WebRTC SFU. Built only if you have the deps;
+  # see mediaserver/CMakeLists.txt (libdatachannel is fetched at build time).
+  # mediaserver:
+  #   build: ./mediaserver
+  #   network: host   # WebRTC UDP needs a broad port range
+
+volumes:
+  pgdata:
+  redisdata:

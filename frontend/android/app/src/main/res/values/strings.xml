@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Taza-Gojo EDU</string>
+    <string name="title_activity_main">Taza-Gojo EDU</string>
+    <string name="package_name">edu.tazagojo.app</string>
+    <string name="custom_url_scheme">edu.tazagojo.app</string>
+</resources>

@@ -1,0 +1,16 @@
+{
+  "appId": "edu.tazagojo.app",
+  "appName": "Taza-Gojo EDU",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#0d1117"
+  },
+  "ios": {
+    "backgroundColor": "#0d1117"
+  },
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "capacitor"
+  }
+}

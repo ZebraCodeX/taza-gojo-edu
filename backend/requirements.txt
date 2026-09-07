@@ -1,0 +1,10 @@
+Django>=5.2,<6.0
+djangorestframework>=3.16
+django-cors-headers>=4.6
+channels[daphne]>=4.2
+channels-redis>=4.2
+daphne>=4.1
+djangorestframework-simplejwt>=5.4
+psycopg[binary]>=3.2
+redis>=5.2
+requests>=2.32

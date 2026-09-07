@@ -1,0 +1,39 @@
+# Taza-Gojo EDU — single fly.io app.
+# One machine runs everything: Django (daphne) on 8000 serves the API, the
+# WebSocket signaling relay AND the built React SPA from a single origin.
+# Secrets/env not committed: DJANGO_SECRET_KEY, DJANGO_DEBUG,
+# DJANGO_ALLOWED_HOSTS and DATABASE_URL live in `fly secrets set`.
+
+app = "taza-gojo-edu"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Web app talks to the same origin (it is served by this container);
+  # native builds hardcode VITE_API_URL at build time instead.
+  AI_PROVIDER = "mock"
+  AI_API_KEY = ""
+  TURN_SERVERS = "[]"
+  # Single container -> in-memory Channels works. For 2+ instances set
+  # REDIS_URL to an Upstash/fly Redis instance (see docs/DEPLOY.md).
+
+[services]
+  # health checks hit the API, not the SPA catch-all
+  processes = ["app"]
+  internal_port = 8000
+  auto_start_machines = true
+  auto_stop_machines = "stop"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
