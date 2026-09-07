@@ -15,7 +15,8 @@ primary_region = "iad"
   # native builds hardcode VITE_API_URL at build time instead.
   AI_PROVIDER = "mock"
   AI_API_KEY = ""
-  TURN_SERVERS = "[]"
+  # Leave TURN_SERVERS unset unless you run a TURN relay. The API always
+  # falls back to public STUN, so calls work without it.
   # Single container -> in-memory Channels works. For 2+ instances set
   # REDIS_URL to an Upstash/fly Redis instance (see docs/DEPLOY.md).
 
@@ -25,6 +26,9 @@ primary_region = "iad"
   internal_port = 8000
   auto_start_machines = true
   auto_stop_machines = "stop"
+  # Keep one machine hot so a live-tutoring call never waits ~25s for a
+  # cold boot (WebRTC signaling must connect immediately).
+  min_machines_running = 1
 
   [[services.ports]]
     handlers = ["http"]

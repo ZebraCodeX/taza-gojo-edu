@@ -3,6 +3,8 @@ import json
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase, override_settings
 from django.contrib.auth import get_user_model
+from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import AccessToken
 from apps.accounts.models import Profile
 from apps.tutoring.models import TutoringSession
 
@@ -87,3 +89,44 @@ class SignalConsumerTests(TestCase):
         self.assertEqual(mode["payload"]["mode"], "low")
         await a.disconnect()
         await b.disconnect()
+
+
+class TurnConfigTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(username="stu", password="x", role="student")
+        Profile.objects.create(user=self.student)
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + str(AccessToken.for_user(self.student)))
+
+    def _ice(self):
+        return self.client.get("/api/v1/tutoring/ice/").json()
+
+    @override_settings(TURN_SERVERS="[]")
+    def test_empty_json_yields_stun_only(self):
+        servers = self._ice()["iceServers"]
+        self.assertEqual(servers, [{"urls": ["stun:stun.l.google.com:19302"]}])
+
+    @override_settings(TURN_SERVERS="")
+    def test_unset_yields_stun_only(self):
+        servers = self._ice()["iceServers"]
+        self.assertEqual(servers, [{"urls": ["stun:stun.l.google.com:19302"]}])
+
+    @override_settings(TURN_SERVERS='["turn:turn.example.edu:3478?user=alice;pass=secret"]')
+    def test_json_turn_with_credentials(self):
+        servers = self._ice()["iceServers"]
+        self.assertEqual(servers[0]["urls"], ["turn:turn.example.edu:3478"])
+        self.assertEqual(servers[0]["username"], "alice")
+        self.assertEqual(servers[0]["credential"], "secret")
+        # STUN fallback is still appended.
+        self.assertEqual(servers[1]["urls"], ["stun:stun.l.google.com:19302"])
+
+    @override_settings(TURN_SERVERS='[{"urls":["stun:stun.cloudflare.com:3478"]}]')
+    def test_shaped_json_passthrough(self):
+        servers = self._ice()["iceServers"]
+        self.assertEqual(servers[0]["urls"], ["stun:stun.cloudflare.com:3478"])
+
+    @override_settings(TURN_SERVERS="garbage that is not a server")
+    def test_junk_never_reaches_clients(self):
+        servers = self._ice()["iceServers"]
+        self.assertNotIn("turn:[]", [u for e in servers for u in e["urls"]])
+        self.assertEqual(servers, [{"urls": ["stun:stun.l.google.com:19302"]}])

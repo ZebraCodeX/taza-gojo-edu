@@ -1,3 +1,5 @@
+import json
+
 from django.db.models import Q
 from django.utils import timezone
 from rest_framework import viewsets, status
@@ -96,26 +98,56 @@ class AvailableTutorsView(viewsets.ViewSet):
 
 
 class TurnConfigView(viewsets.ViewSet):
-    """ICE servers the WebRTC clients should use (TURN matters for NAT in rural regions)."""
+    """ICE servers the WebRTC clients should use (TURN matters for NAT in rural regions).
+
+    TURN_SERVERS may be a JSON array of server specs, e.g.
+      ["turn:turn.example.edu:3478?user=alice;pass=secret", "stun:stun.example.edu:3478"]
+    or shaped entries [{"urls":["turns:..."],"username":"u","credential":"p"}].
+    """
 
     permission_classes = [IsAuthenticated]
 
+    @staticmethod
+    def _normalise(spec):
+        """Return a WebRTC-style RTCIceServer dict, or None for junk input."""
+        if isinstance(spec, dict):
+            urls = spec.get("urls") or []
+            if not urls:
+                return None
+            entry = {"urls": [u for u in urls if ":" in str(u)]}
+            for key in ("username", "credential"):
+                if spec.get(key):
+                    entry[key] = spec[key]
+            return entry if entry["urls"] else None
+        spec = str(spec).strip()
+        if not spec.lower().startswith(("turn:", "turns:", "stun:", "stuns:")):
+            return None
+        urls, _, cred = spec.partition("?")
+        entry = {"urls": [urls]}
+        if cred.startswith("user="):
+            user, _, passw = cred[len("user="):].partition(";pass=")
+            if user and passw:
+                entry["username"] = user
+                entry["credential"] = passw
+        return entry
+
     def list(self, request):
+        raw = (settings.TURN_SERVERS or "").strip()
         servers = []
-        raw = settings.TURN_SERVERS
-        if raw:
-            for part in raw.split(";"):
-                host, _, cred = part.partition("?")
-                entry = {"urls": []}
-                if cred:
-                    u, _, p = cred.partition(";pass=")
-                    user, _, passw = u.partition("=")
-                    entry["username"] = user
-                    entry["credential"] = passw
-                entry["urls"].append("turn:" + host)
-                servers.append(entry)
-        if not servers:
-            servers = [
-                {"urls": ["stun:stun.l.google.com:19302"]},
-            ]
+        if raw and raw not in ("[]", "{}", "null"):
+            try:
+                raw = json.loads(raw) if raw.startswith(("[", "{")) else raw.split(";")
+            except json.JSONDecodeError:
+                raw = raw.split(";")
+            for item in raw or []:
+                entry = self._normalise(item)
+                if entry:
+                    servers.append(entry)
+        # Always give clients a working way to gather reflexive candidates;
+        # a malformed/empty TURN config must never leave them with no servers.
+        stun_present = any(
+            "stun:" in u.lower() for entry in servers for u in entry.get("urls", [])
+        )
+        if not stun_present:
+            servers.append({"urls": ["stun:stun.l.google.com:19302"]})
         return Response({"iceServers": servers, "mediaServer": settings.MEDIA_SERVER_URL})
