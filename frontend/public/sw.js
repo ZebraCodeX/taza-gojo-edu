@@ -8,7 +8,7 @@
  *                 and pre-seeded into the cache (see docs/offline-first.md).
  */
 
-const SHELL_CACHE = "tazagojo-shell-v1";
+const SHELL_CACHE = "tazagojo-shell-v2";
 const DATA_CACHE = "tazagojo-data-v1";
 const SHELL_ASSETS = ["/", "/index.html", "/manifest.webmanifest", "/icons/icon.svg", "/icons/icon-192.png", "/icons/icon-512.png"];
 

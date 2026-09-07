@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Profile
 from .serializers import RegisterSerializer, ProfileSerializer
@@ -15,8 +16,13 @@ class RegisterView(APIView):
         ser = RegisterSerializer(data=request.data)
         if ser.is_valid():
             user = ser.save()
+            profile = ProfileSerializer(user.profile).data
+            # Hand over valid tokens straight away so a low-bandwidth signup is
+            # a single round trip (create account -> already signed in).
+            rt = RefreshToken.for_user(user)
             return Response(
-                {"user": ProfileSerializer(user.profile).data}, status=status.HTTP_201_CREATED
+                {"user": profile, "access": str(rt.access_token), "refresh": str(rt)},
+                status=status.HTTP_201_CREATED,
             )
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 

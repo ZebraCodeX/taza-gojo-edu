@@ -104,6 +104,20 @@ export async function login(username, password) {
   return d;
 }
 
+// Turn DRF validation errors into one readable sentence instead of a JSON blob.
+export function friendlyError(data, fallback = "Something went wrong. Please try again.") {
+  if (!data) return fallback;
+  if (typeof data === "string") return data;
+  if (data.detail) return data.detail;
+  if (data.non_field_errors?.length) return data.non_field_errors[0];
+  const parts = [];
+  for (const [k, v] of Object.entries(data)) {
+    const label = { username: "Username", password: "Password", email: "Email", role: "Role" }[k] || k;
+    parts.push(`${label}: ${Array.isArray(v) ? v[0] : v}`);
+  }
+  return parts.join(" · ") || fallback;
+}
+
 export async function register(payload) {
   const res = await fetch(`${BASE}/api/v1/auth/register/`, {
     method: "POST",
@@ -111,6 +125,9 @@ export async function register(payload) {
     body: JSON.stringify(payload),
   });
   const data = await res.json();
-  if (!res.ok) throw new ApiError(JSON.stringify(data), res.status);
+  if (!res.ok) throw new ApiError(friendlyError(data), res.status);
+  // Signup returns tokens too, so "create account" also signs you in — no
+  // extra round trip for students on slow links.
+  if (data.access && data.refresh) setTokens(data.access, data.refresh);
   return data;
 }
