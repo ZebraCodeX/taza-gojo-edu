@@ -36,9 +36,11 @@ ENV FRONTEND_DIST="/app/frontend_dist"
 
 EXPOSE 8000
 # migrate + seed content, start the AI worker in the background, then daphne.
+# migrate + seed content first (so daphne never serves before seed_lecture_links
+# has linked the committed videos), then start the AI worker in the background.
 CMD ["sh", "-c", "python manage.py migrate --noinput && \
     python manage.py seed_core && \
     python manage.py seed_materials && \
     python manage.py seed_lecture_links && \
-    python manage.py run_agents & \
+    (python manage.py run_agents &) && \
     exec daphne -b 0.0.0.0 -p 8000 config.asgi:application"]
