@@ -8,6 +8,7 @@ backend/media/*
 !backend/media/lectures/
 backend/media/lectures/*
 !backend/media/lectures/*.mp4
+!backend/media/lectures/manifest.json
 *.pyc
 
 # Node
