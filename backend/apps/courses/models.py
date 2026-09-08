@@ -57,8 +57,31 @@ class Lesson(models.Model):
     version = models.PositiveIntegerField(default=1)
     order = models.PositiveIntegerField(default=0)
 
+    # Video lecture (rendered offline from the lesson content with HyperFrames).
+    # `lecture_file` holds the finished MP4 preview, `lecture_status` tracks the
+    # render pipeline (pending -> rendering -> ready | error).
+    lecture_file = models.FileField(upload_to="lectures/", blank=True, null=True)
+    lecture_status = models.CharField(
+        max_length=12,
+        choices=[
+            ("pending", "Pending"),
+            ("rendering", "Rendering"),
+            ("ready", "Ready"),
+            ("error", "Error"),
+        ],
+        default="pending",
+    )
+    lecture_duration = models.PositiveIntegerField(default=0, help_text="Lecture length in seconds")
+
     class Meta:
         ordering = ["order"]
+
+    def lecture_url(self):
+        if not self.lecture_file:
+            return ""
+        from django.conf import settings
+
+        return f"/{settings.MEDIA_URL.strip('/')}/{self.lecture_file.name}"
 
     def __str__(self):
         return self.title

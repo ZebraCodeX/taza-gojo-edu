@@ -11,8 +11,8 @@ import { store } from "../store/app";
 const FEATURES = [
   ["\u{1F3AE}", "Game-based lessons that play with zero signal"],
   ["\u{1F4DA}", "A free library you can download for offline study"],
-  ["\u{1F916}", "An AI tutor that answers in steps"],
   ["\u{1F4F9}", "Face-to-face video help from real teachers"],
+  ["\u{1F4D6}", "Video lectures and study packs for every topic"],
 ];
 
 const DEMO_ACCOUNTS = [
@@ -93,7 +93,8 @@ export default function LoginPage() {
         <h1>Learn anything. Anywhere. Even with no signal.</h1>
         <p className="auth-tagline">
           An online secondary school for students on low-bandwidth networks —
-          courses, free books, an AI tutor and live teachers, all in one place.
+          courses, video lectures, free books and live face-to-face teachers,
+          all in one place.
         </p>
         <ul className="feature-list">
           {FEATURES.map(([ico, txt]) => (

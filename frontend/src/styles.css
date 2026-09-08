@@ -77,13 +77,65 @@ body {
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 10px 8px;
+  gap: 6px;
+  padding: 0 10px 9px;
   overflow-x: auto;
 }
-.header-nav .navlink { text-decoration: none; color: var(--ink); font-weight: 600; font-size: 14px; padding: 6px 10px; border-radius: 8px; }
-.header-nav .navlink.on { background: #f1f4fa; color: var(--ink); }
+.navbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.navbtn-ico { font-size: 15px; }
+.navbtn:hover { background: #f1f4fa; border-color: var(--line); }
+.navbtn.on {
+  background: #f4ebfd;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.navbtn.small { padding: 5px 10px; font-size: 13px; gap: 5px; }
 .header-nav .pill { margin-left: auto; }
+
+/* ---------- mobile bottom nav (thumb-friendly, Canvas-style quick nav) ---------- */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: none;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -2px 10px rgba(28, 35, 51, 0.07);
+  padding: 4px 6px env(safe-area-inset-bottom);
+}
+.bnav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 2px 4px;
+  border-radius: 10px;
+}
+.bnav-ico { font-size: 20px; line-height: 1; }
+.bnav-label { font-size: 11px; }
+.bnav:active { background: #f1f4fa; }
+.bnav.on { color: var(--primary); background: #f7f0fd; }
+.bnav.on .bnav-ico { transform: translateY(-1px); }
 
 .pill {
   display: inline-block;
@@ -439,20 +491,6 @@ textarea.ta { resize: vertical; }
 .lesson { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: var(--ink); }
 .lesson.done { border-color: #bfe8cf; }
 
-/* ---------- chat ---------- */
-.chat-page { max-width: 700px; }
-.chat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; min-height: 46vh; max-height: 56vh; overflow-y: auto; }
-.msg { margin: 6px 0; padding: 10px 12px; border-radius: 12px; max-width: 85%; white-space: pre-wrap; font-size: 15px; }
-.msg.user { margin-left: auto; background: var(--primary); color: #fff; }
-.msg.agent { background: #f3effb; }
-.msg.dim { color: var(--muted); }
-.msg .notes { margin-top: 6px; font-size: 12px; color: var(--muted); }
-.followups { display: flex; gap: 6px; flex-wrap: wrap; padding: 8px 2px; }
-.followups .chip { padding: 6px 12px; }
-.chat-form { display: flex; gap: 8px; margin-top: 6px; }
-.chat-form input { flex: 1; }
-.subject-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-
 /* ---------- tutors ---------- */
 .tutors a { text-decoration: none; color: var(--ink); }
 .tutors { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
@@ -514,6 +552,20 @@ textarea.ta { resize: vertical; }
 .cmd { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 13px; cursor: pointer; }
 .blocklist { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
 .blocklist span { background: var(--primary); color: #fff; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+
+/* ---------- lecture videos ---------- */
+.lecture { margin-bottom: 14px; }
+.lecture h2 { margin: 0 0 2px; }
+.lecture-video {
+  width: 100%;
+  margin-top: 12px;
+  border-radius: var(--radius);
+  background: #0b1a30;
+  display: block;
+}
+.badge.lecture-badge { background: #1f9d55; color: #fff; }
+.play-tick { color: var(--primary); }
+.done-tick { color: var(--ok); }
 
 /* ---------- library ---------- */
 .filters { margin-bottom: 14px; }
@@ -598,6 +650,13 @@ textarea.ta { resize: vertical; }
 }
 .admin-row:last-child { border-bottom: none; }
 .admin-row-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+@media (max-width: 760px) {
+  .header-nav { display: none; }
+  .bottom-nav { display: grid; }
+  .page { padding-bottom: 92px; }
+  .header-row { padding-top: 8px; padding-bottom: 8px; }
+}
 
 @media (max-width: 560px) {
   .hero-art { display: none; }

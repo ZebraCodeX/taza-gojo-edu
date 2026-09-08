@@ -7,7 +7,7 @@
   "orientation": "portrait",
   "background_color": "#f7f8fb",
   "theme_color": "#7c3aed",
-  "description": "An online secondary school for low-bandwidth networks: game-based lessons, a free offline library, an AI tutor and live teachers.",
+  "description": "An online secondary school for low-bandwidth networks: game-based lessons, video lectures, a free offline library and live teachers.",
   "icons": [
     { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
     { "src": "/icons/icon-128.png", "sizes": "128x128", "type": "image/png" },

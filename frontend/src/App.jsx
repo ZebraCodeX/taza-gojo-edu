@@ -2,7 +2,7 @@
 // tiny on 2G; teachers and students both share this shell.
 
 import React, { Suspense, lazy, useEffect } from "react";
-import { HashRouter, Routes, Route, NavLink, Navigate, useNavigate } from "react-router-dom";
+import { HashRouter, Routes, Route, NavLink, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { isAuthed, api } from "./api/client";
 import { store, useStore } from "./store/app";
 import { registerServiceWorker } from "./services/offline";
@@ -11,7 +11,6 @@ const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const CoursePage = lazy(() => import("./pages/CoursePage"));
 const LessonPage = lazy(() => import("./pages/LessonPage"));
-const AITutorPage = lazy(() => import("./pages/AITutorPage"));
 const TutorsPage = lazy(() => import("./pages/TutorsPage"));
 const CallPage = lazy(() => import("./pages/CallPage"));
 const LibraryPage = lazy(() => import("./pages/LibraryPage"));
@@ -23,6 +22,19 @@ function RequireAuth({ children }) {
   if (!isAuthed()) return <Navigate to="/" replace />;
   return children;
 }
+
+const NAV = [
+  ["/dashboard", "Learn", "🏫"],
+  ["/library", "Library", "🗂"],
+  ["/tutors", "Tutors", "👩🏽‍🏫"],
+];
+
+const NAV_MOBILE = [
+  ["/dashboard", "Home", "🏫"],
+  ["/library", "Library", "🗂"],
+  ["/tutors", "Tutors", "🎥"],
+  ["/profile", "Profile", "🧑🏽‍🎓"],
+];
 
 function Header() {
   const online = useStore((s) => s.online);
@@ -58,7 +70,7 @@ function Header() {
         <div className="header-actions">
           {points > 0 && <span className="pill brown">⚡ {points} pts</span>}
           {canAdmin && (
-            <NavLink to="/admin" className={({ isActive }) => "navlink" + (isActive ? " on" : "")}>🛠 Admin</NavLink>
+            <NavLink to="/admin" className={({ isActive }) => "navbtn small" + (isActive ? " on" : "")}>🛠 Admin</NavLink>
           )}
           <NavLink to="/profile" className="avatar-link" title="My profile">
             <span className="avatar">{role === "teacher" ? "👩🏽‍🏫" : "🧑🏽‍🎓"}</span>
@@ -66,16 +78,33 @@ function Header() {
           <button className="link" onClick={logout}>Sign out</button>
         </div>
       </div>
-      <nav className="header-nav">
-        <NavLink to="/dashboard" className={({ isActive }) => "navlink" + (isActive ? " on" : "")}>Learn</NavLink>
-        <NavLink to="/library" className={({ isActive }) => "navlink" + (isActive ? " on" : "")}>Library</NavLink>
-        <NavLink to="/ai" className={({ isActive }) => "navlink" + (isActive ? " on" : "")}>AI Tutor</NavLink>
-        <NavLink to="/tutors" className={({ isActive }) => "navlink" + (isActive ? " on" : "")}>Tutors</NavLink>
+      <nav className="header-nav" aria-label="Main">
+        {NAV.map(([to, label, icon]) => (
+          <NavLink key={to} to={to} end={to === "/dashboard"} className={({ isActive }) => "navbtn" + (isActive ? " on" : "")}>
+            <span className="navbtn-ico">{icon}</span>
+            <span>{label}</span>
+          </NavLink>
+        ))}
         <span className={`pill ${online ? "" : "offline"}`} style={{ marginLeft: "auto" }}>
           {online ? "● Online" : "○ Offline"}
         </span>
       </nav>
     </header>
+  );
+}
+
+function BottomNav() {
+  const location = useLocation();
+  if (isAuthed() && location.pathname.startsWith("/call/")) return null;
+  return (
+    <nav className="bottom-nav" aria-label="Quick">
+      {NAV_MOBILE.map(([to, label, icon]) => (
+        <NavLink key={to} to={to} end={to === "/dashboard"} className={({ isActive }) => "bnav" + (isActive ? " on" : "")}>
+          <span className="bnav-ico">{icon}</span>
+          <span className="bnav-label">{label}</span>
+        </NavLink>
+      ))}
+    </nav>
   );
 }
 
@@ -128,16 +157,6 @@ export default function App() {
               <RequireAuth>
                 <Layout>
                   <LessonPage />
-                </Layout>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/ai"
-            element={
-              <RequireAuth>
-                <Layout>
-                  <AITutorPage />
                 </Layout>
               </RequireAuth>
             }
@@ -212,6 +231,7 @@ function Layout({ children }) {
     <>
       <Header />
       <main className="page">{children}</main>
+      <BottomNav />
     </>
   );
 }

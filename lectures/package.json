@@ -1,0 +1,15 @@
+{
+  "name": "taza-gojo-lectures",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "HyperFrames render project for Taza-Gojo lesson video lectures (HTML -> MP4).",
+  "scripts": {
+    "doctor": "hyperframes doctor",
+    "render": "hyperframes render",
+    "preview": "hyperframes preview"
+  },
+  "devDependencies": {
+    "hyperframes": "^0.8.31"
+  }
+}

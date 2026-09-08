@@ -3,7 +3,11 @@ backend/.venv/
 backend/db.sqlite3
 backend/**/__pycache__/
 backend/staticfiles/
-backend/media/
+backend/media/*
+# ...but keep committed lecture videos (they're baked into the deployed image)
+!backend/media/lectures/
+backend/media/lectures/*
+!backend/media/lectures/*.mp4
 *.pyc
 
 # Node

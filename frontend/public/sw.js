@@ -10,6 +10,7 @@
 
 const SHELL_CACHE = "tazagojo-shell-v2";
 const DATA_CACHE = "tazagojo-data-v1";
+const MEDIA_CACHE = "tazagojo-media-v1";
 const SHELL_ASSETS = ["/", "/index.html", "/manifest.webmanifest", "/icons/icon.svg", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
@@ -23,7 +24,7 @@ self.addEventListener("activate", (e) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((k) => k !== SHELL_CACHE && k !== DATA_CACHE).map((k) => caches.delete(k)))
+        Promise.all(keys.filter((k) => k !== SHELL_CACHE && k !== DATA_CACHE && k !== MEDIA_CACHE).map((k) => caches.delete(k)))
       )
       .then(() => self.clients.claim())
   );
@@ -39,6 +40,21 @@ self.addEventListener("fetch", (e) => {
 
   const isApi = url.pathname.startsWith("/api/");
   const isShell = url.pathname === "/" || url.pathname.startsWith("/assets/") || SHELL_ASSETS.includes(url.pathname);
+  const isLecture = url.pathname.startsWith("/media/lectures/");
+
+  if (isLecture) {
+    // Cache-First: a lecture you already watched plays again with zero signal.
+    e.respondWith(
+      caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(MEDIA_CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      }))
+    );
+    return;
+  }
 
   if (isShell) {
     e.respondWith(

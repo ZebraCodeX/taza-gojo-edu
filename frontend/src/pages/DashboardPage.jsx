@@ -57,12 +57,13 @@ export default function DashboardPage() {
         <div>
           <h1>Welcome, {firstName} {points > 0 && <span className="pill heroPill">⚡ {points} points</span>}</h1>
           <p className="hero-sub">
-            Learn like a school — lessons, free books, study packs and live tutors.
-            Everything works offline after you save it.
+            Your school, online. Follow your courses, watch video lectures, read
+            free books and study packs, and meet a live tutor face-to-face —
+            all of it works offline after you save it.
           </p>
           <div className="row">
-            <Link className="btn primary" to="/library">📚 Browse the library</Link>
-            <Link className="btn ghost" to="/ai">💬 Ask the AI tutor</Link>
+            <Link className="btn primary" to="/library">📚 Browse free resources</Link>
+            <Link className="btn ghost" to="/tutors">🎥 Find a live tutor</Link>
           </div>
         </div>
         <div className="hero-art">🎓</div>
@@ -135,9 +136,10 @@ export default function DashboardPage() {
       <section className="tip card">
         <h3>💡 Study tip</h3>
         <p className="muted">
-          Save a <b>study pack</b> from the Library before class — it downloads to this
-          device so you can keep learning with zero signal. Ask the AI tutor anything
-          from your notes; it pulls the right material for you.
+          Watch the <b>video lecture</b> for a lesson before you play it, and save a
+          <b> study pack</b> from the Library before class — they download to this
+          device so you can keep learning with zero signal. Stuck? Book a
+          <b> live face-to-face tutor</b> from the Tutors page.
         </p>
       </section>
     </div>

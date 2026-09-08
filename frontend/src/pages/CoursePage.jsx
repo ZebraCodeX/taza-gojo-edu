@@ -98,11 +98,14 @@ export default function CoursePage() {
                     return (
                       <Link to={`/lesson/${l.id}`} key={l.id} className={`card lesson ${isDone ? "done" : ""}`}>
                         <div className="row between">
-                          <strong>{isDone ? "✅" : "▶"} {l.title}</strong>
+                          <strong>
+                            <span className={isDone ? "done-tick" : "play-tick"}>{isDone ? "✅" : "▶"}</span> {l.title}
+                          </strong>
                           <span className="muted small">+{l.xp} XP</span>
                         </div>
                         <div className="row">
                           <span className="badge">{l.kind}</span>
+                          {l.has_lecture && <span className="badge lecture-badge">🎬 lecture</span>}
                           <span className="muted small">{l.duration_minutes} min · offline-ready</span>
                         </div>
                       </Link>

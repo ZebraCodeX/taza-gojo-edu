@@ -5,6 +5,8 @@ frontend/node_modules
 frontend/dist
 frontend/ios
 frontend/android
+lectures/node_modules
+lectures/out
 **/__pycache__
 *.pyc
 *.log

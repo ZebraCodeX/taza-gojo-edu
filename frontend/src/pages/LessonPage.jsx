@@ -33,8 +33,25 @@ export default function LessonPage() {
 
   return (
     <div>
+      {lesson.lecture_url && (
+        <section className="card lecture">
+          <div className="row between">
+            <div>
+              <h2>🎬 Video lecture</h2>
+              <p className="muted small">
+                {lesson.lecture_duration ? `${lesson.lecture_duration}s · ` : ""}Watch first, then play the game.
+              </p>
+            </div>
+            <span className="pill">low-data ~{lesson.lecture_duration ? Math.max(1, Math.round(lesson.lecture_duration * 0.05)) : 2} MB</span>
+          </div>
+          <video className="lecture-video" controls preload="metadata" playsInline>
+            <source src={lesson.lecture_url} type="video/mp4" />
+            Your device can't play this video; the game below works offline too.
+          </video>
+        </section>
+      )}
       <GameRenderer lesson={lesson} onDone={(r) => setResult(r)} />
-      {result && <div className="card success">Well done! <strong>{result.stars} stars!+3 stars</strong> syncing…</div>}
+      {result && <div className="card success">Well done, {result.stars}/3 stars! {result.stars === 3 ? "Perfect — syncing your progress…" : "Progress saved — syncing…"}</div>}
     </div>
   );
 }
