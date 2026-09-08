@@ -2,7 +2,8 @@ import json
 
 from django.db.models import Q
 from django.utils import timezone
-from rest_framework import viewsets, status
+from django.utils.dateparse import parse_datetime
+from rest_framework import viewsets, status, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -28,7 +29,24 @@ class SessionViewSet(viewsets.ModelViewSet):
         return TutoringSession.objects.filter(Q(student=user) | Q(tutor=user))
 
     def perform_create(self, serializer):
+        # Zoom-style: students can book the session for a future time. A
+        # past/absent slot means "request = as soon as a tutor accepts".
+        if serializer.validated_data.get("scheduled_at"):
+            if serializer.validated_data["scheduled_at"] <= timezone.now():
+                raise serializers.ValidationError(
+                    {"scheduled_at": "Pick a future time."})
         serializer.save(student=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        # Teachers may reschedule/retime sessions they're assigned to; students
+        # may retime their own request before a tutor claims it.
+        session = self.get_object()
+        if request.data.get("scheduled_at"):
+            dt = parse_datetime(request.data["scheduled_at"])
+            if dt and dt <= timezone.now():
+                return Response({"scheduled_at": "Pick a future time."},
+                                status=status.HTTP_400_BAD_REQUEST)
+        return super().update(request, *args, **kwargs)
 
     @action(detail=True, methods=["post"])
     def accept(self, request, pk=None):
@@ -37,11 +55,27 @@ class SessionViewSet(viewsets.ModelViewSet):
         if request.user.is_teacher and session.status == TutoringSession.Status.REQUESTED:
             session.tutor = request.user
             session.status = TutoringSession.Status.SCHEDULED
+            # If the student booked a slot, honour it; otherwise default to now
+            # so "accept" = instant call, like Zoom's "start instantly".
             session.save()
             CallEvent.objects.create(session=session, kind="join", actor=request.user,
                                      detail={"event": "tutor accepted"})
             return Response(SessionSerializer(session).data)
         return Response({"error": "cannot accept"}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["post"])
+    def cancel(self, request, pk=None):
+        """Either participant can cancel a session before or during the window."""
+        session = self.get_object()
+        if request.user not in (session.student, session.tutor):
+            return Response({"error": "not a participant"}, status=status.HTTP_403_FORBIDDEN)
+        if session.status == TutoringSession.Status.ENDED:
+            return Response({"error": "already ended"}, status=status.HTTP_400_BAD_REQUEST)
+        session.status = TutoringSession.Status.CANCELLED
+        session.save()
+        CallEvent.objects.create(session=session, kind="leave", actor=request.user,
+                                 detail={"reason": "cancelled"})
+        return Response(SessionSerializer(session).data)
 
     @action(detail=True, methods=["post"])
     def start(self, request, pk=None):

@@ -45,6 +45,7 @@ class SignalConsumer(AsyncJsonWebsocketConsumer):
             "device": self.device,
             "role": "student" if self.user.is_student else "teacher",
             "mode": await self._session_mode(),
+            "schedule": await self._session_schedule(),
             "mediaserver": settings.MEDIA_SERVER_URL,
         })
         # Tell the group someone is here (for presence/join detection).
@@ -117,17 +118,41 @@ class SignalConsumer(AsyncJsonWebsocketConsumer):
         try:
             if self.token:
                 payload = AccessToken(self.token)
-                return True, User.objects.get(pk=payload["user_id"])
-            # fallback: session cookie auth via Django scope user
-            user = self.scope.get("user")
-            return (user and user.is_authenticated), user or None
+                user = User.objects.get(pk=payload["user_id"])
+            else:
+                user = self.scope.get("user")
         except Exception:
             return False, None
+        session = TutoringSession.objects.filter(pk=self.session_id).first()
+        if not session:
+            return False, None
+        if session.status in (TutoringSession.Status.ENDED, TutoringSession.Status.CANCELLED):
+            return False, None
+        is_student = user == session.student
+        is_tutor = user == session.tutor
+        # A teacher may connect to an open request too (claiming it on the wire);
+        # students may always watch their own session's lobby.
+        if is_student or (is_tutor and session.status != TutoringSession.Status.REQUESTED):
+            return True, user
+        # Unassigned open request: any teacher may join the lobby to claim it.
+        if user.is_teacher and session.status == TutoringSession.Status.REQUESTED:
+            return True, user
+        return False, None
 
     @database_sync_to_async
     def _session_mode(self):
         sess = TutoringSession.objects.filter(pk=self.session_id).first()
         return sess.mode if sess else "video"
+
+    @database_sync_to_async
+    def _session_schedule(self):
+        sess = TutoringSession.objects.filter(pk=self.session_id).first()
+        if not sess or not sess.scheduled_at:
+            return None
+        return {
+            "scheduled_at": sess.scheduled_at.isoformat(),
+            "duration_minutes": sess.duration_minutes,
+        }
 
     @database_sync_to_async
     def _set_mode(self, mode):

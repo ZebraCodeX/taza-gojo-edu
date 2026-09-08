@@ -41,3 +41,15 @@ primary_region = "iad"
   [services.concurrency]
     hard_limit = 25
     soft_limit = 20
+
+  # Watch /api/health/ (no DB/auth) — if the machine wedges (as CPU/memory
+  # starvation caused before) fly restarts it automatically instead of serving
+  # hung requests until someone SSHes in to reboot.
+  [[services.http_checks]]
+    interval = "30s"
+    timeout = "3s"
+    grace_period = "25s"
+    method = "get"
+    path = "/api/health/"
+    restart_limit = 2
+    restart_interval = "2m"

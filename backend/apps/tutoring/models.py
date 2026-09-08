@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 
 class TutoringSession(models.Model):
@@ -29,6 +30,13 @@ class TutoringSession(models.Model):
     topic = models.CharField(max_length=120, blank=True)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.REQUESTED)
 
+    # Zoom-style scheduling: when the call window opens and how long it lasts.
+    scheduled_at = models.DateTimeField(null=True, blank=True,
+                                   help_text="Call window opens this time (participants can join a few minutes early).")
+    duration_minutes = models.PositiveSmallIntegerField(
+        default=30, help_text="Scheduled call length in minutes.")
+    EARLY_JOIN_MINUTES = 5  # how early participants may join before the window
+
     # Bandwidth hint negotiated at start of call, drives mediaserver encoder presets.
     mode = models.CharField(
         max_length=10,
@@ -53,6 +61,28 @@ class TutoringSession(models.Model):
 
     def __str__(self):
         return f"#{self.pk} {self.student} ↔ {self.tutor or 'unmatched'} [{self.status}]"
+
+    # ---- scheduling helpers (Zoom-style windows) ----
+
+    def starts_in_seconds(self, now=None):
+        """Signed seconds until the window opens (negative once it's open)."""
+        import datetime
+
+        if not self.scheduled_at:
+            return None
+        now = now or timezone.now()
+        return int((self.scheduled_at - now).total_seconds())
+
+    def window_open(self, now=None):
+        """True when participants may join: a few min early, up to the scheduled end."""
+        import datetime as dt
+
+        if self.scheduled_at:
+            now = now or timezone.now()
+            early_ok = self.scheduled_at - dt.timedelta(minutes=self.EARLY_JOIN_MINUTES)
+            ends = self.scheduled_at + dt.timedelta(minutes=self.duration_minutes + 15)
+            return early_ok <= now <= ends
+        return True  # ad-hoc session: join anytime
 
 
 class CallEvent(models.Model):

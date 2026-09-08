@@ -8,8 +8,14 @@
  *                 and pre-seeded into the cache (see docs/offline-first.md).
  */
 
-const SHELL_CACHE = "tazagojo-shell-v2";
-const DATA_CACHE = "tazagojo-data-v1";
+/*
+ * …stale-while-revalidate for API GETs: paint the last-known reply instantly
+ * (great on high-latency links), refresh the cache from the network in the
+ * background, and the next paint is fresh.
+ */
+
+const SHELL_CACHE = "tazagojo-shell-v3";
+const DATA_CACHE = "tazagojo-data-v2";
 const MEDIA_CACHE = "tazagojo-media-v1";
 const SHELL_ASSETS = ["/", "/index.html", "/manifest.webmanifest", "/icons/icon.svg", "/icons/icon-192.png", "/icons/icon-512.png"];
 
@@ -68,16 +74,22 @@ self.addEventListener("fetch", (e) => {
   }
 
   if (isApi) {
+    // Stale-while-revalidate: answer from cache instantly (great on high
+    // latency), then refill the cache from the network in the background.
     e.respondWith(
-      fetch(req)
-        .then((res) => {
-          if (res.ok) {
-            const copy = res.clone();
-            caches.open(DATA_CACHE).then((c) => c.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => caches.match(req).then((hit) => hit || Response.error()))
+      caches.match(req).then((hit) => {
+        const network = fetch(req)
+          .then((res) => {
+            if (res.ok) {
+              const copy = res.clone();
+              caches.open(DATA_CACHE).then((c) => c.put(req, copy));
+            }
+            return res;
+          })
+          .catch(() => null);
+        if (hit) return hit; // paint now, background refresh
+        return network.then((fresh) => fresh || Response.error());
+      })
     );
   }
 });

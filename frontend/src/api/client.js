@@ -20,6 +20,20 @@ export function setTokens(a, r) {
   else localStorage.removeItem("tg_access");
   if (r) localStorage.setItem("tg_refresh", r);
   else localStorage.removeItem("tg_refresh");
+  if (!a) purgeDataCache(); // never leak one user's cached list to the next
+}
+
+// Drop stale-while-revalidate cached API responses for a previous user.
+function purgeDataCache() {
+  try {
+    if (typeof caches === "undefined") return;
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.filter((k) => k.startsWith("tazagojo-data"))
+          .map((k) => caches.delete(k))
+      )
+    ).catch(() => {});
+  } catch { /* no SW / private mode */ }
 }
 
 export function isAuthed() {
@@ -28,6 +42,12 @@ export function isAuthed() {
 
 export function getAccessToken() {
   return access;
+}
+
+// Used by the signaling WebSocket client when the server rejects its (expired)
+// JWT — the socket can't ride the normal 401→refresh path in api.*.
+export async function refreshAccessToken() {
+  return tryRefresh();
 }
 
 async function raw(method, path, body) {

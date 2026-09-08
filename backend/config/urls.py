@@ -1,12 +1,20 @@
 from django.conf import settings
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path, re_path
 from django.views.static import serve
 
 from .spa import spa
 
+
+def health(request):
+    """Liveness probe for fly.io HTTP checks (no DB, no auth, always fast)."""
+    return JsonResponse({"ok": True})
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/health/", health),
     path("api/v1/auth/", include("apps.accounts.urls")),
     path("api/v1/courses/", include("apps.courses.urls")),
     path("api/v1/agents/", include("apps.agents.urls")),

@@ -1,7 +1,10 @@
 import asyncio
 import json
+from asgiref.sync import sync_to_async
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase, override_settings
+from django.utils import timezone
+from datetime import timedelta
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import AccessToken
@@ -130,3 +133,119 @@ class TurnConfigTests(TestCase):
         servers = self._ice()["iceServers"]
         self.assertNotIn("turn:[]", [u for e in servers for u in e["urls"]])
         self.assertEqual(servers, [{"urls": ["stun:stun.l.google.com:19302"]}])
+
+
+class ScheduleTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(username="stu", password="x", role="student")
+        Profile.objects.create(user=self.student)
+        self.teacher = User.objects.create_user(username="tea", password="x", role="teacher")
+        Profile.objects.create(user=self.teacher)
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + str(AccessToken.for_user(self.student)))
+
+    def _create(self, **extra):
+        body = {"topic": "Algebra bootcamp", "duration_minutes": 30, **extra}
+        return self.client.post("/api/v1/tutoring/sessions/", body, format="json")
+
+    def test_create_scheduled_future(self):
+        r = self._create(scheduled_at=(timezone.now() + timedelta(hours=2)).isoformat())
+        self.assertEqual(r.status_code, 201)
+        d = r.json()
+        self.assertIsNotNone(d["scheduled_at"])
+        self.assertEqual(d["duration_minutes"], 30)
+        self.assertEqual(d["status"], "requested")
+        self.assertFalse(d["joinable"])
+        self.assertGreater(d["starts_in_seconds"], 0)
+
+    def test_create_rejects_past(self):
+        r = self._create(scheduled_at=(timezone.now() - timedelta(hours=1)).isoformat())
+        self.assertEqual(r.status_code, 400)
+
+    def test_create_rejects_bad_duration(self):
+        r = self._create(duration_minutes=23)
+        self.assertEqual(r.status_code, 400)
+
+    def test_join_window(self):
+        # 2 minutes into the window (early-join) → joinable, signed countdown < 0.
+        s = TutoringSession.objects.create(
+            student=self.student, tutor=self.teacher,
+            status=TutoringSession.Status.SCHEDULED,
+            scheduled_at=timezone.now() - timedelta(minutes=2), duration_minutes=30,
+        )
+        ser = self.client.get(f"/api/v1/tutoring/sessions/{s.pk}/").json()
+        self.assertTrue(ser["joinable"])
+        self.assertLess(ser["starts_in_seconds"], 0)
+
+    def test_not_joinable_before_window(self):
+        s = TutoringSession.objects.create(
+            student=self.student, tutor=self.teacher,
+            status=TutoringSession.Status.SCHEDULED,
+            scheduled_at=timezone.now() + timedelta(hours=3), duration_minutes=30,
+        )
+        ser = self.client.get(f"/api/v1/tutoring/sessions/{s.pk}/").json()
+        self.assertFalse(ser["joinable"])
+
+    def test_cancel_by_participant(self):
+        s = TutoringSession.objects.create(student=self.student, status=TutoringSession.Status.SCHEDULED)
+        r = self.client.post(f"/api/v1/tutoring/sessions/{s.pk}/cancel/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json()["status"], "cancelled")
+
+    def test_cancel_by_stranger_forbidden(self):
+        other = User.objects.create_user(username="bad", password="x", role="student")
+        Profile.objects.create(user=other)
+        s = TutoringSession.objects.create(student=self.student, status=TutoringSession.Status.SCHEDULED)
+        other_client = APIClient()
+        other_client.credentials(HTTP_AUTHORIZATION="Bearer " + str(AccessToken.for_user(other)))
+        # The queryset only exposes participant-owned sessions, so strangers get 404.
+        r = other_client.post(f"/api/v1/tutoring/sessions/{s.pk}/cancel/")
+        self.assertEqual(r.status_code, 404)
+
+    async def test_ws_rejects_ended_session(self):
+        def _mk():
+            return TutoringSession.objects.create(
+                student=self.student, status=TutoringSession.Status.ENDED)
+        s = await sync_to_async(_mk)()
+        tok = str(AccessToken.for_user(self.student))
+        comm = WebsocketCommunicator(
+            __import__("config.asgi", fromlist=["application"]).application,
+            f"/ws/tutor/{s.pk}/?device=web&token={tok}",
+        )
+        ok, _ = await comm.connect()
+        self.assertFalse(ok)
+
+    async def test_ws_welcome_includes_schedule(self):
+        def _mk():
+            return TutoringSession.objects.create(
+                student=self.student, status=TutoringSession.Status.SCHEDULED,
+                scheduled_at=timezone.now() + timedelta(hours=1), duration_minutes=45,
+            )
+        s = await sync_to_async(_mk)()
+        tok = str(AccessToken.for_user(self.student))
+        comm = WebsocketCommunicator(
+            __import__("config.asgi", fromlist=["application"]).application,
+            f"/ws/tutor/{s.pk}/?device=web&token={tok}",
+        )
+        ok, _ = await comm.connect()
+        self.assertTrue(ok)
+        welcome = await comm.receive_json_from(timeout=2)
+        self.assertIsNotNone(welcome["schedule"])
+        self.assertEqual(welcome["schedule"]["duration_minutes"], 45)
+        await comm.disconnect()
+
+    async def test_ws_rejects_stranger(self):
+        def _mk():
+            return TutoringSession.objects.create(
+                student=self.student, status=TutoringSession.Status.SCHEDULED)
+        s = await sync_to_async(_mk)()
+        other = await sync_to_async(User.objects.create_user)(
+            username="eve", password="x", role="student")
+        await sync_to_async(Profile.objects.create)(user=other)
+        tok = str(AccessToken.for_user(other))
+        comm = WebsocketCommunicator(
+            __import__("config.asgi", fromlist=["application"]).application,
+            f"/ws/tutor/{s.pk}/?device=web&token={tok}",
+        )
+        ok, _ = await comm.connect()
+        self.assertFalse(ok)
