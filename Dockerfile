@@ -39,5 +39,6 @@ EXPOSE 8000
 CMD ["sh", "-c", "python manage.py migrate --noinput && \
     python manage.py seed_core && \
     python manage.py seed_materials && \
+    python manage.py seed_lecture_links && \
     python manage.py run_agents & \
     exec daphne -b 0.0.0.0 -p 8000 config.asgi:application"]
