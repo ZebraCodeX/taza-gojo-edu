@@ -2,9 +2,8 @@ from django.db import transaction
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Count, Q
 
-from .models import Course, Module, Lesson, LessonProgress, Question
+from .models import Course, Lesson, LessonProgress
 from .serializers import (
     CourseSerializer,
     ModuleSerializer,

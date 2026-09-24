@@ -42,8 +42,9 @@ Set `AI_PROVIDER` — one of:
 Calls are one-shot with the following hints in the instruction block: *"You are
 a patient tutor for a 9-year-old. Use short sentences. No jargon. End with one
 practice question."* Providers raise `ProviderError` on unreachable endpoints so
-the queue marks the task `failed` and the frontend shows a friendly retry line
-(`frontend/src/pages/AITutorPage.jsx`).
+the queue marks the task `failed` and the client can retry. The tutor is exposed
+at `POST /api/v1/agents/tutor/ask/`; the frontend calls it as an assist inside
+lessons rather than as a standalone chat page.
 
 ## Lesson content format (what ContentAgent emits)
 

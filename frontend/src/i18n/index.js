@@ -5,7 +5,7 @@
 // Ethiopia-first: Amharic (am) and Afaan Oromo (om) lead, with Tigrinya (ti),
 // Somali (so), then continental languages French/Swahili/Arabic (RTL).
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 export const LANGUAGES = [
   { code: "en", label: "English", dir: "ltr" },

@@ -2,7 +2,7 @@ import hashlib
 import secrets
 
 from django.conf import settings
-from django.db.models import Avg, Count
+from django.db.models import Count
 from django.utils import timezone
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
@@ -51,7 +51,7 @@ class AssessmentViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "slug"
 
     def get_queryset(self):
-        qs = Assessment.objects.filter(is_published=True)
+        qs = Assessment.objects.filter(is_published=True).annotate(item_count=Count("items"))
         subject = self.request.query_params.get("subject")
         course = self.request.query_params.get("course")
         grade = self.request.query_params.get("grade")
@@ -112,7 +112,6 @@ class AttemptViewSet(viewsets.GenericViewSet):
             return DRFResponse({"detail": "Not permitted."}, status=status.HTTP_403_FORBIDDEN)
         attempts = Attempt.objects.all()
         graded = attempts.exclude(status="in_progress")
-        avg = graded.aggregate(avg=Avg("score"))["avg"] or 0
         return DRFResponse({
             "attempts": attempts.count(),
             "in_progress": attempts.filter(status="in_progress").count(),
@@ -204,7 +203,7 @@ class AttemptViewSet(viewsets.GenericViewSet):
             "score": attempt.score,
             "max_score": attempt.max_score,
         }
-        payload.update(_serve(attempt, exclude_answered=True))
+        payload.update(_serve(attempt))
         return DRFResponse(payload)
 
     @action(detail=True, methods=["post"])
@@ -252,7 +251,7 @@ class CertificateViewSet(viewsets.ReadOnlyModelViewSet):
         })
 
 
-def _serve(attempt, exclude_answered=True):
+def _serve(attempt):
     """Return the next item payload for an attempt (answered items are skipped)."""
     total = attempt.assessment.max_items or attempt.assessment.items.count()
     base = {"attempt": attempt.id, "attempt_id": attempt.id}

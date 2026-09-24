@@ -1,4 +1,4 @@
-# Taza-Gojo EDU — single fly.io app.
+# Taza-Gojo EDU — single-container deployment (Render, Fly, Docker).
 # Stage 1: build the React web app (= PWA shell + Capacitor web assets).
 # Stage 2: Django (daphne) serving BOTH the API/WebSockets AND the built SPA
 # from one origin — service worker, WebRTC signaling and PWA stay same-origin,
@@ -45,5 +45,6 @@ CMD ["sh", "-c", "python manage.py migrate --noinput && \
     python manage.py seed_curriculum && \
     python manage.py seed_assessment && \
     python manage.py seed_labs && \
+    python manage.py seed_interactive && \
     (python manage.py run_agents &) && \
     exec daphne -b 0.0.0.0 -p 8000 config.asgi:application"]

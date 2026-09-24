@@ -65,7 +65,7 @@ def build_lecture_html(lesson, module_title, course):
         """)
 
     # 5 — outro
-    add(4.0, f"""
+    add(4.0, """
       <div class="in kicker">Almost there</div>
       <h2 class="in">Now play it in the app</h2>
       <p class="in body">Earn XP and stars, and save your progress —
@@ -134,7 +134,7 @@ def _engine_slides(engine, content):
              (<b>forward</b>, <b>turn right</b>) on a {grid}×{grid} grid
              so the robot reaches the goal tile.</p>
         """
-    return f"""
+    return """
       <div class="in kicker">Explore</div>
       <h2 class="in">What you'll learn here</h2>
       <p class="in body">This lesson introduces a new idea. Watch, play, and

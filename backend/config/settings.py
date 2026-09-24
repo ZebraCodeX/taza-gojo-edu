@@ -10,7 +10,8 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = os.environ.get("DEBUG", "1") == "1"
+# Accept both DEBUG and DJANGO_DEBUG so container/PaaS configs agree.
+DEBUG = os.environ.get("DEBUG", os.environ.get("DJANGO_DEBUG", "1")) == "1"
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-insecure-key-change-me")
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 

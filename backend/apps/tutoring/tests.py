@@ -1,5 +1,3 @@
-import asyncio
-import json
 from asgiref.sync import sync_to_async
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase, override_settings
@@ -24,7 +22,6 @@ class SignalConsumerTests(TestCase):
         self.session = TutoringSession.objects.create(student=self.student)
 
     def _comm(self, user):
-        from urllib.parse import quote
         from rest_framework_simplejwt.tokens import AccessToken
         tok = str(AccessToken.for_user(user))
         path = f"/ws/tutor/{self.session.pk}/?device=web&token={tok}"

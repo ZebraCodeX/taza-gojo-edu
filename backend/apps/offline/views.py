@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from apps.courses.models import Course, Module, Lesson, LessonProgress
+from apps.courses.models import Course, Lesson, LessonProgress
 
 from .models import SyncBatch
 

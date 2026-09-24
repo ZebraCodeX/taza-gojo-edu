@@ -32,6 +32,10 @@ React web + mobile app ──► Django (API + WebRTC signaling + LiveKit tokens
   auth (student/teacher/content_creator/admin); tutoring sessions and a
   WebSocket signaling relay for WebRTC calls; a content-agent task queue with a
   `mock` provider; offline sync and a lecture render pipeline.
+- **Interactive lessons** — Brilliant-style guided discovery that runs offline:
+  sliders, plots, ordering, matching, an embedded circuit simulator, immediate
+  feedback with the *reason why*, hints and worked solutions. Seed with
+  `python manage.py seed_interactive`.
 - **Curriculum** — framework/strand/outcome model seeded with Cambridge Primary,
   Lower Secondary and IGCSE plus Ethiopian MoE and TVET, cross-mapped so one
   lesson serves many countries. See `docs/curriculum.md`.
@@ -75,7 +79,7 @@ cd backend && python -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py seed_core && python manage.py seed_materials
-python manage.py seed_curriculum && python manage.py seed_assessment && python manage.py seed_labs
+python manage.py seed_curriculum && python manage.py seed_assessment && python manage.py seed_labs && python manage.py seed_interactive
 python manage.py run_agents &
 daphne -b 127.0.0.1 -p 8000 config.asgi:application
 

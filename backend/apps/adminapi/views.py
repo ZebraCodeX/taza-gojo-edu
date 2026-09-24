@@ -8,13 +8,12 @@ student/teacher accounts. Django's /admin stays the deep-admin fallback.
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
 from rest_framework import permissions, status
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.courses.models import Course, LessonProgress
 from apps.library.models import Download, Material
-from apps.accounts.serializers import UserSerializer
 
 User = get_user_model()
 

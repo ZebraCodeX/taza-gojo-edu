@@ -98,8 +98,6 @@ class AssessmentFlowTests(TestCase):
     def test_full_attempt_issues_certificate(self):
         start = self.client.post(f"/api/v1/assessment/assessments/{self.a.slug}/start/")
         self.assertEqual(start.status_code, 201)
-        attempt_id = start.data["attempt_id"] if "attempt_id" in start.data else start.data["id"]
-        # The start response embeds the attempt id under 'id' via _serve? Guard both.
         attempt = Attempt.objects.get(user=self.user)
         self.assertEqual(attempt.status, "in_progress")
 

@@ -81,7 +81,7 @@ def _mock_math(expr):
         return {
             "reply": f"1. We need to {name} {a:g} and {b:g}.\n2. {a:g} {op} {b:g} = {val:g}.\n"
                      f"So the answer is {val:g}. Try one more on your own!",
-            "follow_ups": [f"What is {b:g} {op} {a:g}?", f"Show a word problem for this.", "Now round our answer to 2 decimals."],
+            "follow_ups": [f"What is {b:g} {op} {a:g}?", "Show a word problem for this.", "Now round our answer to 2 decimals."],
         }
     return None
 

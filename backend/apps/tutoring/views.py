@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 
 from .models import TutoringSession, CallEvent
-from .serializers import SessionSerializer, CallEventSerializer
+from .serializers import SessionSerializer
 
 
 class SessionViewSet(viewsets.ModelViewSet):
@@ -40,7 +40,7 @@ class SessionViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         # Teachers may reschedule/retime sessions they're assigned to; students
         # may retime their own request before a tutor claims it.
-        session = self.get_object()
+        self.get_object()
         if request.data.get("scheduled_at"):
             dt = parse_datetime(request.data["scheduled_at"])
             if dt and dt <= timezone.now():

@@ -1,4 +1,3 @@
-import React from "react";
 
 export default function PageHeader({ icon, title, subtitle, actions }) {
   return (

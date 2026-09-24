@@ -34,6 +34,7 @@ services:
                python manage.py seed_curriculum &&
                python manage.py seed_assessment &&
                python manage.py seed_labs &&
+               python manage.py seed_interactive &&
                daphne -b 0.0.0.0 -p 8000 config.asgi:application"
     environment:
       DJANGO_SECRET_KEY: change-me-in-production

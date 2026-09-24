@@ -1,6 +1,6 @@
 // store/app.js — tiny global store (no external state lib) + a hook.
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 let state = {
   user: null, // profile payload

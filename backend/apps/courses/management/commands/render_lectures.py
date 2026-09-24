@@ -23,7 +23,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from apps.courses.lecture_video import build_lecture_html, duration_for_probe
-from apps.courses.models import Course, Lesson
+from apps.courses.models import Lesson
 
 REPO_ROOT = Path(settings.BASE_DIR).parent
 LECTURES_DIR = REPO_ROOT / "lectures"

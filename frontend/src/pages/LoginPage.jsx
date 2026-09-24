@@ -92,7 +92,7 @@ export default function LoginPage() {
         </div>
         <h1>Learn anything. Anywhere. Even with no signal.</h1>
         <p className="auth-tagline">
-          An online secondary school for students on low-bandwidth networks —
+          An online school for students on low-bandwidth networks —
           courses, video lectures, free books and live face-to-face teachers,
           all in one place.
         </p>

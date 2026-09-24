@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Item, Assessment, AssessmentItem, Attempt, Response, Certificate
+from .models import Item, Assessment, Attempt, Response, Certificate
 
 
 class ItemStudentSerializer(serializers.ModelSerializer):
@@ -21,7 +21,8 @@ class ItemStaffSerializer(serializers.ModelSerializer):
 
 
 class AssessmentSerializer(serializers.ModelSerializer):
-    item_count = serializers.SerializerMethodField()
+    # Provided by an annotation in the viewset (avoids an N+1 per row).
+    item_count = serializers.IntegerField(read_only=True)
     course_slug = serializers.CharField(source="course.slug", read_only=True, default=None)
 
     class Meta:
@@ -31,14 +32,6 @@ class AssessmentSerializer(serializers.ModelSerializer):
             "kind", "time_limit_minutes", "pass_score", "max_items", "adaptive",
             "grade_min", "grade_max", "item_count",
         ]
-
-    def get_item_count(self, obj):
-        return obj.items.count()
-
-
-class AssessmentDetailSerializer(AssessmentSerializer):
-    class Meta(AssessmentSerializer.Meta):
-        fields = AssessmentSerializer.Meta.fields
 
 
 class ResponseSerializer(serializers.ModelSerializer):

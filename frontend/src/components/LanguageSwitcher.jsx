@@ -1,4 +1,3 @@
-import React from "react";
 import { LANGUAGES, useI18n } from "../i18n";
 
 export default function LanguageSwitcher() {

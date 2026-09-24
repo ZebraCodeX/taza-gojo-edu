@@ -44,6 +44,7 @@ class Lesson(models.Model):
         max_length=20,
         choices=[
             ("game", "Game"),
+            ("interactive", "Interactive"),
             ("video", "Video"),
             ("quiz", "Quiz"),
             ("reading", "Reading"),

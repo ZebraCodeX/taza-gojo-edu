@@ -66,8 +66,6 @@ class TutoringSession(models.Model):
 
     def starts_in_seconds(self, now=None):
         """Signed seconds until the window opens (negative once it's open)."""
-        import datetime
-
         if not self.scheduled_at:
             return None
         now = now or timezone.now()

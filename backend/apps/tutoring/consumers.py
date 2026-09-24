@@ -6,8 +6,6 @@ acts as a tiny, reliable message bus — resilient to flaky mobile networks, and
 each message carries an `id` so clients can retransmit lost ones.
 """
 
-import json
-
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model

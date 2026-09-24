@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import GameRenderer from "../games/GameRenderer";
+import InteractiveLesson from "../lessons/InteractiveLesson";
 import { api } from "../api/client";
 import { local } from "../services/offline";
 
@@ -14,18 +15,25 @@ export default function LessonPage() {
   const [result, setResult] = useState(null);
 
   useEffect(() => {
+    let alive = true;
+    // Read the offline cache and fetch the network in parallel — the cache must
+    // never block a lesson from loading (IndexedDB can be slow on old devices).
+    const cachedPromise = local.get("lessons", Number(id)).catch(() => null);
+    cachedPromise.then((c) => {
+      if (alive && c) setLesson((prev) => prev || c);
+    });
     (async () => {
-      // Offline fast-path first, then freshen from the network.
-      const cached = await local.get("lessons", Number(id));
-      if (cached) setLesson(cached);
       try {
         const { data } = await api.get(`/api/v1/courses/lessons/${id}/`);
+        if (!alive) return;
         setLesson(data);
-        await local.put("lessons", { id: Number(id), ...data });
+        local.put("lessons", { id: Number(id), ...data }).catch(() => {});
       } catch {
-        if (!cached) setErr("This lesson isn't cached and you're offline.");
+        const c = await cachedPromise;
+        if (alive && !c) setErr("This lesson isn't cached and you're offline.");
       }
     })();
+    return () => { alive = false; };
   }, [id]);
 
   if (!lesson && !err) return <p>Loading lesson…</p>;
@@ -50,7 +58,11 @@ export default function LessonPage() {
           </video>
         </section>
       )}
-      <GameRenderer lesson={lesson} onDone={(r) => setResult(r)} />
+      {lesson.content?.engine === "interactive" ? (
+        <InteractiveLesson lesson={lesson} onDone={(r) => setResult(r)} />
+      ) : (
+        <GameRenderer lesson={lesson} onDone={(r) => setResult(r)} />
+      )}
       {result && <div className="card success">Well done, {result.stars}/3 stars! {result.stars === 3 ? "Perfect — syncing your progress…" : "Progress saved — syncing…"}</div>}
     </div>
   );

@@ -15,7 +15,6 @@ import json
 import logging
 
 from django.utils import timezone
-from django.conf import settings
 
 from . import providers
 from .models import AgentTask
@@ -50,7 +49,6 @@ def _retrieve_context(subject, question, limit=2):
         qs = qs.filter(q)
     out = []
     for m in qs.order_by("-downloads", "id")[:limit]:
-        words = [w for w in terms if w in m.title.lower() or w in (m.description or "").lower()]
         outline = " ".join(m.outline or []) or re_plain(m.content or "")
         snippet = _plain(outline)[:280]
         out.append({"title": m.title, "snippet": snippet, "subject": subject})
