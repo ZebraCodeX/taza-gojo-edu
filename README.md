@@ -1,5 +1,7 @@
 # 🎓 Taza-Gojo EDU
 
+**Live:** https://taza-edu.onrender.com
+
 An online school for children on low-bandwidth (2G/3G) networks in Africa.
 Works as a **web app (PWA)** and as **downloadable mobile apps** (Google Play +
 App Store via Capacitor).
