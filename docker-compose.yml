@@ -31,6 +31,9 @@ services:
       bash -c "python manage.py migrate --noinput &&
                python manage.py seed_core &&
                python manage.py seed_materials &&
+               python manage.py seed_curriculum &&
+               python manage.py seed_assessment &&
+               python manage.py seed_labs &&
                daphne -b 0.0.0.0 -p 8000 config.asgi:application"
     environment:
       DJANGO_SECRET_KEY: change-me-in-production
@@ -43,6 +46,11 @@ services:
       AI_PROVIDER: mock
       AI_API_KEY: ""
       AI_API_URL: ""
+      # Live classes (LiveKit). Uncomment the livekit service below and set the
+      # same key/secret to enable group video. Empty = P2P fallback only.
+      LIVEKIT_URL: ""
+      LIVEKIT_API_KEY: ""
+      LIVEKIT_API_SECRET: ""
     ports:
       - "8000:8000"
     depends_on:
@@ -86,6 +94,15 @@ services:
   # mediaserver:
   #   build: ./mediaserver
   #   network: host   # WebRTC UDP needs a broad port range
+
+  # Optional LiveKit SFU for live classes (1:1 and groups up to 15).
+  # Open source; run it and point the backend's LIVEKIT_* env at it.
+  # livekit:
+  #   image: livekit/livekit-server:latest
+  #   command: --dev --bind 0.0.0.0
+  #   network_mode: host
+  #   environment:
+  #     LIVEKIT_KEYS: "devkey: secret"   # must match LIVEKIT_API_KEY/SECRET
 
 volumes:
   pgdata:

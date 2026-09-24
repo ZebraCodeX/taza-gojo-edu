@@ -13,6 +13,8 @@ const SUBJECTS = [
   ["math", "Math"],
   ["english", "English"],
   ["science", "Science"],
+  ["physics", "Physics"],
+  ["electricity", "Electricity"],
   ["computing", "Computing"],
 ];
 const KINDS = [
@@ -172,9 +174,10 @@ export default function LibraryPage() {
 }
 
 const COLORS = {
-  math: "#4c6ef5", english: "#e8590c", science: "#099268", computing: "#7048a8", general: "#5f6b7a",
+  math: "#4c6ef5", english: "#e8590c", science: "#099268", physics: "#e16f24",
+  electricity: "#b7791f", computing: "#7048a8", general: "#5f6b7a",
 };
 function thumbColor(subject) { return COLORS[subject] || COLORS.general; }
 function subjectIcon(subject) {
-  return { math: "🧮", english: "📖", science: "🔬", computing: "💻" }[subject] || "📚";
+  return { math: "🧮", english: "📖", science: "🔬", physics: "🧲", electricity: "⚡", computing: "💻" }[subject] || "📚";
 }

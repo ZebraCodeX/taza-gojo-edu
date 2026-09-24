@@ -8,14 +8,19 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { store, useStore } from "../store/app";
 
-const SUBJECTS = ["math", "english", "science", "computing"];
-const INTEREST_LABEL = { math: "🧮 Math", english: "📖 English", science: "🔬 Science", computing: "💻 Computing" };
+const SUBJECTS = ["math", "english", "science", "physics", "electricity", "computing"];
+const INTEREST_LABEL = {
+  math: "🧮 Math", english: "📖 English", science: "🔬 Science",
+  physics: "🧲 Physics", electricity: "⚡ Electricity", computing: "💻 Computing",
+};
 const ROADMAP_IDEAS = [
   ["math", "Multiplication facts", "4"],
   ["math", "Fractions and decimals", "6"],
   ["english", "Reading with comprehension", "6"],
   ["english", "Writing good paragraphs", "8"],
   ["science", "The water cycle and weather", "4"],
+  ["physics", "Forces and motion", "6"],
+  ["electricity", "Build and test a simple circuit", "4"],
   ["computing", "First steps in programming", "8"],
 ];
 
@@ -34,13 +39,16 @@ export default function ProfilePage() {
         setProfile(data);
         store.set({ user: data, points: data.points });
       } catch {
-        setErr("Could not load your profile — try again when you're online.");
+        // Offline: fall back to the cached profile in the global store.
+        const cached = store.get().user;
+        if (cached) setProfile(cached);
+        else setErr("Could not load your profile — try again when you're online.");
       }
     })();
   }, []);
 
   if (!profile) {
-    return <div className="loading">⏳</div>;
+    return err ? <p className="error">{err}</p> : <div className="loading">⏳</div>;
   }
 
   const isStudent = profile.user?.role !== "teacher";
@@ -270,4 +278,7 @@ export default function ProfilePage() {
   );
 }
 
-const SUBJECT_ICONS = { math: "🧮", english: "📖", science: "🔬", computing: "💻", general: "🎯" };
+const SUBJECT_ICONS = {
+  math: "🧮", english: "📖", science: "🔬", physics: "🧲",
+  electricity: "⚡", computing: "💻", general: "🎯",
+};

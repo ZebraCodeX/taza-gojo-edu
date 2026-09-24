@@ -8,3 +8,4 @@ djangorestframework-simplejwt>=5.4
 psycopg[binary]>=3.2
 redis>=5.2
 requests>=2.32
+whitenoise>=6.7

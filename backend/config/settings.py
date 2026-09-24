@@ -26,7 +26,12 @@ INSTALLED_APPS = [
     "corsheaders",
     "channels",
     "apps.accounts",
+    "apps.curriculum",
     "apps.courses",
+    "apps.assessment",
+    "apps.labs",
+    "apps.live",
+    "apps.analytics",
     "apps.agents",
     "apps.tutoring",
     "apps.offline",
@@ -37,6 +42,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -118,9 +124,33 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    # WhiteNoise serves collected static (Django admin) in production.
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ---- Production / PaaS (Render, Fly, Heroku) ----
+# Render terminates TLS at its proxy; trust the forwarded proto and host.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "https://*.onrender.com").split(",")
+    if o.strip()
+]
+
+if not DEBUG:
+    # Behind Render's TLS proxy (SECURE_PROXY_SSL_HEADER set above).
+    SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "1") == "1"
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "3600"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # Built React SPA (frontend/dist). The Django app serves it on the same origin
 # so the PWA, service worker, WebSockets and WebRTC signaling share one host —
@@ -172,6 +202,13 @@ AI_OPENAI_URL = os.environ.get("AI_OPENAI_URL", "https://api.openai.com/v1")
 # Where the C++ mediaserver (SFU + bitrate adaptation) lives.
 MEDIA_SERVER_URL = os.environ.get("MEDIA_SERVER_URL", "wss://mediaserver:8443")
 TURN_SERVERS = os.environ.get("TURN_SERVERS", "")  # "turn:host:3478?user=u;pass=p"
+
+# ---- LiveKit (live classes: 1:1 and groups up to 15) ----
+# Self-hosted, open source SFU. Without keys the API returns configured=False
+# and clients fall back to the peer-to-peer tutoring signaling.
+LIVEKIT_URL = os.environ.get("LIVEKIT_URL", "")
+LIVEKIT_API_KEY = os.environ.get("LIVEKIT_API_KEY", "")
+LIVEKIT_API_SECRET = os.environ.get("LIVEKIT_API_SECRET", "")
 
 # ---- Offline sync ----
 SYNC_WINDOW_DAYS = int(os.environ.get("SYNC_WINDOW_DAYS", "30"))

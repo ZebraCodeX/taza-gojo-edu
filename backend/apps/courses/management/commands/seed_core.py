@@ -134,6 +134,108 @@ CORE = [
             }
         ],
     },
+    {
+        "slug": "physics",
+        "name": "Physics",
+        "icon": "🧲",
+        "color": "#e16f24",
+        "is_core": True,
+        "modules": [
+            {
+                "title": "Forces and Motion",
+                "lessons": [
+                    {
+                        "title": "Forces Around Us",
+                        "kind": "game",
+                        "xp": 20,
+                        "content": {
+                            "engine": "catch",
+                            "instructions": "Catch the picture that shows a push or a pull.",
+                            "levels": [
+                                {"targets": ["push", "pull", "gravity", "friction"], "rounds": 4},
+                            ],
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Which force pulls objects towards the Earth?",
+                             "options": ["Gravity", "Magnetism", "Friction"], "answer": "Gravity",
+                             "hint": "It is why a dropped ball falls down."},
+                            {"kind": "numeric", "prompt": "A car travels 100 m in 20 s. What is its average speed in m/s?",
+                             "answer": "5", "hint": "speed = distance / time"},
+                        ],
+                    },
+                    {
+                        "title": "Energy Transfers",
+                        "kind": "game",
+                        "xp": 20,
+                        "content": {
+                            "engine": "sequencing",
+                            "instructions": "Order the energy transfer in a torch, from battery to light.",
+                            "levels": [
+                                {"steps": ["chemical store", "electrical transfer", "light and thermal"]},
+                            ],
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Energy can be transferred but cannot be...",
+                             "options": ["stored", "created or destroyed", "measured"], "answer": "created or destroyed",
+                             "hint": "This is the law of conservation of energy."},
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        "slug": "electricity",
+        "name": "Electricity",
+        "icon": "⚡",
+        "color": "#f2cc0c",
+        "is_core": True,
+        "modules": [
+            {
+                "title": "Circuits and Safety",
+                "lessons": [
+                    {
+                        "title": "Build a Simple Circuit",
+                        "kind": "game",
+                        "xp": 25,
+                        "content": {
+                            "engine": "blockly",
+                            "instructions": "Connect the battery, switch and bulb to make the bulb light.",
+                            "levels": [
+                                {"components": ["battery", "switch", "bulb"], "goal": "closed circuit"},
+                            ],
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "What must a circuit be for current to flow?",
+                             "options": ["Open", "Closed", "Broken"], "answer": "Closed",
+                             "hint": "Current needs a complete loop back to the battery."},
+                            {"kind": "mcq", "prompt": "Which material is a good conductor?",
+                             "options": ["Copper", "Rubber", "Plastic"], "answer": "Copper",
+                             "hint": "Think about the wires inside a cable."},
+                        ],
+                    },
+                    {
+                        "title": "Ohm's Law Bubbles",
+                        "kind": "game",
+                        "xp": 25,
+                        "content": {
+                            "engine": "bubbles",
+                            "instructions": "Pop the bubble with the correct value of V = I × R.",
+                            "levels": [
+                                {"problems": [[2, 5], [3, 4], [0.5, 10], [1.5, 4]]},
+                            ],
+                        },
+                        "questions": [
+                            {"kind": "numeric", "prompt": "A current of 2 A flows through a 6 Ω resistor. What is the voltage?",
+                             "answer": "12", "hint": "V = I × R"},
+                            {"kind": "numeric", "prompt": "A 12 V supply drives 3 A. What is the resistance in ohms?",
+                             "answer": "4", "hint": "R = V / I"},
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
 ]
 
 

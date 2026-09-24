@@ -1,0 +1,61 @@
+# Render Blueprint — one-click deploy of Taza-Gojo EDU.
+#
+# In the Render dashboard: New → Blueprint → connect this repo → Apply.
+# Render builds the root Dockerfile (React SPA + Django/daphne on one origin),
+# creates a free Postgres, runs migrations + content seeds on first boot, and
+# serves the app at https://taza-edu.onrender.com (service name = "taza-edu").
+#
+# Notes:
+# - The `.onrender.com` subdomain is fixed by the service name; a custom domain
+#   like `taza-edu-onrender.com` is not a Render-provided host (it would need to
+#   be registered and pointed at Render via DNS).
+# - Free instances sleep when idle and wake on the next request (a few seconds).
+# - For 2+ instances, add a Redis/Key Value instance and set REDIS_URL so the
+#   Channels layer and agent queue are shared.
+
+databases:
+  - name: taza-db
+    databaseName: tazagojo
+    user: tazagojo
+    plan: free
+    region: frankfurt
+
+services:
+  - type: web
+    name: taza-edu
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt
+    healthCheckPath: /api/health/
+    autoDeploy: true
+    envVars:
+      - key: DEBUG
+        value: "0"
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: taza-db
+          property: connectionString
+      - key: AI_PROVIDER
+        value: mock
+      # Optional: enable group live classes (LiveKit). Leave empty for P2P.
+      - key: LIVEKIT_URL
+        value: ""
+      - key: LIVEKIT_API_KEY
+        value: ""
+      - key: LIVEKIT_API_SECRET
+        value: ""
+      # Optional: point at a Redis/Key Value instance for multi-instance scale.
+      # - key: REDIS_URL
+      #   fromService:
+      #     type: redis
+      #     name: taza-redis
+      #     property: connectionString
