@@ -724,6 +724,36 @@ textarea.ta { resize: vertical; }
 .il-done-seal { font-size: 58px; }
 .il-done-score { font-size: 42px; font-weight: 800; color: var(--primary); margin: 0; letter-spacing: -0.03em; }
 
+/* ============================= TV / classroom display ============================= */
+.tv {
+  position: fixed; inset: 0; z-index: 100; overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: 4vh 5vw;
+  color: #fff;
+  background:
+    radial-gradient(1200px 600px at 15% 0%, rgba(109, 40, 217, 0.55), transparent 60%),
+    radial-gradient(900px 500px at 100% 100%, rgba(37, 99, 235, 0.45), transparent 60%),
+    linear-gradient(135deg, #0b1020, #1a1147 60%, #0b1020);
+}
+.tv-top { display: flex; align-items: center; justify-content: space-between; }
+.tv-brand { display: flex; align-items: center; gap: 16px; font-size: clamp(20px, 2.4vw, 34px); font-weight: 700; }
+.tv-brand b { color: #c4b5fd; }
+.tv-clock { text-align: right; }
+.tv-time { font-size: clamp(40px, 7vw, 96px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+.tv-date { opacity: 0.7; font-size: clamp(14px, 1.6vw, 22px); }
+.tv-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vh; text-align: center; }
+.tv-class h1 { font-size: clamp(34px, 5.5vw, 84px); margin: 0 0 12px; color: #fff; letter-spacing: -0.03em; }
+.tv-class-tag { font-size: clamp(14px, 1.6vw, 22px); font-weight: 800; letter-spacing: 0.12em; color: #fbbf24; margin-bottom: 10px; }
+.tv-class-meta { font-size: clamp(16px, 2vw, 28px); opacity: 0.85; }
+.tv-join { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 24px; padding: 3vh 4vw; }
+.tv-join-label { text-transform: uppercase; letter-spacing: 0.14em; font-size: clamp(12px, 1.3vw, 18px); opacity: 0.7; }
+.tv-join-url { font-size: clamp(22px, 3.4vw, 52px); font-weight: 800; margin: 8px 0; word-break: break-all; }
+.tv-join-hint { opacity: 0.75; font-size: clamp(13px, 1.5vw, 20px); }
+.tv-tip { display: flex; align-items: center; gap: 16px; font-size: clamp(16px, 2vw, 30px); padding: 16px 0; }
+.tv-tip-label { font-weight: 800; color: #fbbf24; white-space: nowrap; }
+.tv-exit { position: absolute; top: 16px; right: 18px; color: rgba(255, 255, 255, 0.55); text-decoration: none; font-size: 14px; }
+.tv-exit:hover { color: #fff; }
+
 /* ============================= misc / legacy ============================= */
 .tabs { display: flex; gap: 7px; margin: 14px 0 14px; }
 .tab { flex: 1; padding: 11px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-weight: 700; cursor: pointer; color: var(--ink); }

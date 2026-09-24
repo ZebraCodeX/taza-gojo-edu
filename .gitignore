@@ -23,6 +23,10 @@ frontend/ios/App/build/
 frontend/ios/App/Pods/
 release.keystore
 
+# Tauri desktop build output
+frontend/src-tauri/target/
+frontend/src-tauri/gen/
+
 # Editor / OS
 .vscode/
 .idea/

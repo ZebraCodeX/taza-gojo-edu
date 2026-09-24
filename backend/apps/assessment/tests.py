@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from apps.assessment.models import Item, Assessment, AssessmentItem, Attempt, Certificate
+from apps.assessment.models import Item, Assessment, AssessmentItem, Attempt, Certificate, Response
 from apps.assessment import grading, adaptive
 
 User = get_user_model()
@@ -175,3 +175,28 @@ class TeacherGradingTests(TestCase):
         data = self.client.get("/api/v1/assessment/attempts/overview/").data
         self.assertGreaterEqual(data["attempts"], 1)
         self.assertEqual(data["pending_grading"], 1)
+
+
+class CalibrationTests(TestCase):
+    def test_rasch_calibration_runs(self):
+        from django.core.management import call_command
+        from io import StringIO
+
+        easy = Item.objects.create(subject="math", kind="mcq", prompt="easy", answer={"value": "a"}, difficulty=1000)
+        hard = Item.objects.create(subject="math", kind="mcq", prompt="hard", answer={"value": "a"}, difficulty=1000)
+        # 3 learners: everyone gets `easy` right, almost nobody gets `hard` right.
+        for i in range(3):
+            u = User.objects.create_user(f"cal{i}", password="x")
+            a = Attempt.objects.create(user=u, assessment=self._assessment())
+            Response.objects.create(attempt=a, item=easy, correct=True)
+            Response.objects.create(attempt=a, item=hard, correct=(i == 0))
+
+        out = StringIO()
+        call_command("calibrate_items", "--min-responses", "2", stdout=out)
+        easy.refresh_from_db()
+        hard.refresh_from_db()
+        self.assertLess(easy.difficulty, hard.difficulty)
+        self.assertIn("Updated", out.getvalue())
+
+    def _assessment(self):
+        return Assessment.objects.create(slug=f"cal-{Assessment.objects.count()}", title="Cal", subject="math")

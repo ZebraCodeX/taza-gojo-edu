@@ -40,6 +40,7 @@ the PWA service worker can intercept it. Live group classes use a self-hosted
 | `assessment` | Item bank, auto-grading, adaptive Elo, attempts, certificates, manual grading |
 | `labs` | Coding/circuit/physics/science labs + submissions (browser-graded) |
 | `live` | LiveKit class scheduling, scoped tokens, attendance, recording hooks |
+| `gateway` | SMS/USSD/voice quizzes for feature phones (aggregator-agnostic) |
 | `analytics` | Offline-first learning events + summaries |
 | `agents` | Durable task queue + pluggable providers (`mock/openai/ollama`) |
 | `tutoring` | 1:1 session state machine + WebSocket signaling relay |
@@ -96,8 +97,8 @@ the PWA service worker can intercept it. Live group classes use a self-hosted
    that shares one upstream link.
 
 See `docs/offline-first.md`, `docs/curriculum.md`, `docs/assessment.md`,
-`docs/labs.md`, `docs/live.md`, `docs/ai-agents.md`, `docs/DEPLOY.md`,
-`docs/DEPLOY-RENDER.md`.
+`docs/interactive.md`, `docs/labs.md`, `docs/live.md`, `docs/gateway.md`,
+`docs/desktop.md`, `docs/ai-agents.md`, `docs/DEPLOY.md`, `docs/DEPLOY-RENDER.md`.
 
 ## Local dev quickstart
 

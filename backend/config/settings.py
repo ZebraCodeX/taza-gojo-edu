@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "apps.assessment",
     "apps.labs",
     "apps.live",
+    "apps.gateway",
     "apps.analytics",
     "apps.agents",
     "apps.tutoring",
@@ -213,3 +214,15 @@ LIVEKIT_API_SECRET = os.environ.get("LIVEKIT_API_SECRET", "")
 
 # ---- Offline sync ----
 SYNC_WINDOW_DAYS = int(os.environ.get("SYNC_WINDOW_DAYS", "30"))
+
+# ---- Feature-phone gateway (SMS / USSD / voice) ----
+# Default "console" provider logs messages instead of sending, so the whole
+# flow works with no account. Set SMS_PROVIDER=africastalking + keys for real.
+SMS_PROVIDER = os.environ.get("SMS_PROVIDER", "console")  # console | africastalking
+GATEWAY_WEBHOOK_TOKEN = os.environ.get("GATEWAY_WEBHOOK_TOKEN", "")
+AFRICASTALKING_USERNAME = os.environ.get("AFRICASTALKING_USERNAME", "")
+AFRICASTALKING_API_KEY = os.environ.get("AFRICASTALKING_API_KEY", "")
+AFRICASTALKING_SENDER = os.environ.get("AFRICASTALKING_SENDER", "")
+AFRICASTALKING_URL = os.environ.get(
+    "AFRICASTALKING_URL", "https://api.africastalking.com/version1/messaging"
+)

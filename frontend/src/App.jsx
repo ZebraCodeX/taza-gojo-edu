@@ -31,6 +31,7 @@ const LivePage = lazy(() => import("./pages/LivePage"));
 const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
 const ProgressPage = lazy(() => import("./pages/ProgressPage"));
 const TeacherPage = lazy(() => import("./pages/TeacherPage"));
+const TvPage = lazy(() => import("./pages/TvPage"));
 
 function RequireAuth({ children }) {
   if (!isAuthed()) return <Navigate to="/" replace />;
@@ -117,6 +118,10 @@ function Sidebar({ role }) {
             <NavLink to="/teacher" className={({ isActive }) => "snav" + (isActive ? " on" : "")}>
               <span className="snav-ico">👩🏽‍🏫</span>
               <span>Teacher console</span>
+            </NavLink>
+            <NavLink to="/tv" className={({ isActive }) => "snav" + (isActive ? " on" : "")}>
+              <span className="snav-ico">📺</span>
+              <span>Classroom display</span>
             </NavLink>
             <NavLink to="/admin" className={({ isActive }) => "snav" + (isActive ? " on" : "")}>
               <span className="snav-ico">🛠</span>
@@ -252,6 +257,7 @@ export default function App() {
           <Route path="/certificates" element={<RequireAuth><Layout role={role}><CertificatesPage /></Layout></RequireAuth>} />
           <Route path="/progress" element={<RequireAuth><Layout role={role}><ProgressPage /></Layout></RequireAuth>} />
           <Route path="/teacher" element={<RequireAuth><Layout role={role}><TeacherPage /></Layout></RequireAuth>} />
+          <Route path="/tv" element={<RequireAuth><TvPage /></RequireAuth>} />
           <Route path="/tutors" element={<RequireAuth><Layout role={role}><TutorsPage /></Layout></RequireAuth>} />
           <Route path="/call/:sessionId" element={<RequireAuth><CallPage /></RequireAuth>} />
           <Route path="/library" element={<RequireAuth><Layout role={role}><LibraryPage /></Layout></RequireAuth>} />

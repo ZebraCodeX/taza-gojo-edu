@@ -52,6 +52,15 @@ React web + mobile app ──► Django (API + WebRTC signaling + LiveKit tokens
   scheduling, attendance and recording hooks; falls back to P2P when unset. See
   `docs/live.md`.
 - **Analytics** — offline-first learning events powering progress dashboards.
+- **Feature-phone gateway** — the same quizzes over SMS and USSD for learners
+  with no smartphone, with a pluggable aggregator (Africa's Talking) and a
+  terminal simulator. See `docs/gateway.md`.
+- **Classroom / TV mode** — `/#/tv` is a full-screen projector display with the
+  clock, next live class and a join link for students' phones.
+- **Desktop app** — a Tauri shell wraps the same build for school labs
+  (`frontend/src-tauri`). See `docs/desktop.md`.
+- **Adaptive calibration** — `python manage.py calibrate_items` fits a 1PL
+  (Rasch) model to response data and updates item difficulties.
 - **Frontend** — one Vite + React 18 codebase for web and native. The PWA works
   offline (service worker + IndexedDB queue), has four tap-games, adaptive
   assessment runner, labs, live classes, downloadable Library, certificates and a
@@ -101,8 +110,9 @@ Seeded users: `ada` (student) and `mrkwame` (teacher), password `test1234`.
 ## Docs
 
 `docs/architecture.md`, `docs/offline-first.md`, `docs/ai-agents.md`,
-`docs/curriculum.md`, `docs/assessment.md`, `docs/labs.md`, `docs/live.md`,
-`docs/DEPLOY.md`, `docs/STORE-DEPLOY.md`.
+`docs/curriculum.md`, `docs/assessment.md`, `docs/interactive.md`, `docs/labs.md`,
+`docs/live.md`, `docs/gateway.md`, `docs/desktop.md`,
+`docs/DEPLOY.md`, `docs/DEPLOY-RENDER.md`, `docs/STORE-DEPLOY.md`.
 
 ## License
 
