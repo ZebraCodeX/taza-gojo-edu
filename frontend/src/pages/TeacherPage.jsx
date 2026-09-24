@@ -22,9 +22,9 @@ export default function TeacherPage() {
       api.get("/api/v1/assessment/attempts/pending/").then((r) => r.data).catch(() => []),
       api.get("/api/v1/assessment/attempts/").then((r) => (Array.isArray(r.data) ? r.data : r.data?.results || [])).catch(() => []),
     ]);
-    if (o) setOverview(o);
-    setPending(p || []);
-    setAttempts((a || []).slice(0, 20));
+    if (o && typeof o === "object" && !Array.isArray(o)) setOverview(o);
+    setPending(Array.isArray(p) ? p : []);
+    setAttempts(Array.isArray(a) ? a.slice(0, 20) : []);
   };
 
   useEffect(() => { load(); }, []);

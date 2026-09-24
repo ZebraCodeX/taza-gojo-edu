@@ -51,8 +51,8 @@ export default function DashboardPage() {
       if (lc) setClasses(lc.slice(0, 3));
       if (as) setAssessments(as.slice(0, 4));
       if (lb) setLabs(lb.slice(0, 4));
-      if (ce) setCerts(ce.length);
-      if (su) setSummary(su);
+      if (Array.isArray(ce)) setCerts(ce.length);
+      if (su && typeof su === "object" && !Array.isArray(su)) setSummary(su);
 
       const cached = await local.all("lessons");
       setRecent(cached.slice(-4).reverse());

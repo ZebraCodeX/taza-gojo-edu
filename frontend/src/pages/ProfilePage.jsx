@@ -36,8 +36,13 @@ export default function ProfilePage() {
     (async () => {
       try {
         const { data } = await api.get("/api/v1/auth/me/");
-        setProfile(data);
-        store.set({ user: data, points: data.points });
+        if (data && typeof data === "object" && !Array.isArray(data)) {
+          setProfile(data);
+          store.set({ user: data, points: data.points });
+        } else {
+          const cached = store.get().user;
+          if (cached) setProfile(cached);
+        }
       } catch {
         // Offline: fall back to the cached profile in the global store.
         const cached = store.get().user;
