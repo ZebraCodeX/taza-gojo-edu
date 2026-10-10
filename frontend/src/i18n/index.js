@@ -21,7 +21,7 @@ export const LANGUAGES = [
 const STRINGS = {
   en: {
     learn: "Learn", library: "Library", tutors: "Tutors", profile: "Profile",
-    home: "Home", assessments: "Assessments", labs: "Labs", live: "Live",
+    home: "Home", games: "Games", assessments: "Assessments", labs: "Labs", live: "Live",
     progress: "Progress", certificates: "Certificates", admin: "Admin",
     start: "Start", submit: "Submit", next: "Next", finish: "Finish",
     correct: "Correct", tryAgain: "Try again", score: "Score", question: "Question",
@@ -36,7 +36,7 @@ const STRINGS = {
   },
   am: {
     learn: "ተማር", library: "ቤተ መጻሕፍት", tutors: "አስተማሪዎች", profile: "መገለጫ",
-    home: "መነሻ", assessments: "ፈተናዎች", labs: "ላቦራቶሪዎች", live: "ቀጥታ",
+    home: "መነሻ", games: "ጨዋታዎች", assessments: "ፈተናዎች", labs: "ላቦራቶሪዎች", live: "ቀጥታ",
     progress: "እድገት", certificates: "ሰርተፍኬቶች", admin: "አስተዳደር",
     start: "ጀምር", submit: "አስገባ", next: "ቀጣይ", finish: "ጨርስ",
     correct: "ትክክል", tryAgain: "እንደገና ሞክር", score: "ነጥብ", question: "ጥያቄ",
@@ -51,7 +51,7 @@ const STRINGS = {
   },
   om: {
     learn: "Baradhu", library: "Mana Kitaabaa", tutors: "Barsiisoota", profile: "Profaayilii",
-    home: "Fuula Duraa", assessments: "Qormaata", labs: "Laaboraatoorii", live: "Kallattii",
+    home: "Fuula Duraa", games: "Taphoota", assessments: "Qormaata", labs: "Laaboraatoorii", live: "Kallattii",
     progress: "Adeemsa", certificates: "Waraqaa Ragaa", admin: "Bulchiinsa",
     start: "Jalqabi", submit: "Galchi", next: "Itti aanu", finish: "Xumuri",
     correct: "Sirrii", tryAgain: "Irra deebi'ii yaali", score: "Qabxii", question: "Gaaffii",
@@ -66,7 +66,7 @@ const STRINGS = {
   },
   ti: {
     learn: "ተማሃር", library: "ቤተ መጻሕፍቲ", tutors: "ኣሰልጠንቲ", profile: "መግለጺ",
-    home: "መእተዊ", assessments: "ፈተነታት", labs: "ላቦራቶሪ", live: "ቀጥታ",
+    home: "መእተዊ", games: "ጸወታታት", assessments: "ፈተነታት", labs: "ላቦራቶሪ", live: "ቀጥታ",
     progress: "ዕቤት", certificates: "ምስክር ወረቐት", admin: "ምሕደራ",
     start: "ጀምር", submit: "ኣቕርብ", next: "ቀጻሊ", finish: "ወድኣ",
     correct: "ቅኑዕ", tryAgain: "ደጊምካ ፈትን", score: "ነጥቢ", question: "ሕቶ",
@@ -81,7 +81,7 @@ const STRINGS = {
   },
   so: {
     learn: "Baro", library: "Maktabadda", tutors: "Macalimiin", profile: "Profayl",
-    home: "Guriga", assessments: "Imtixaanno", labs: "Shaybaadhka", live: "Toos",
+    home: "Guriga", games: "Ciyaaro", assessments: "Imtixaanno", labs: "Shaybaadhka", live: "Toos",
     progress: "Horumar", certificates: "Shahaadooyin", admin: "Maamul",
     start: "Bilow", submit: "Gudbi", next: "Xiga", finish: "Dhammee",
     correct: "Sax", tryAgain: "Mar kale isku day", score: "Dhibcood", question: "Su'aal",
@@ -96,7 +96,7 @@ const STRINGS = {
   },
   fr: {
     learn: "Apprendre", library: "Bibliothèque", tutors: "Tuteurs", profile: "Profil",
-    home: "Accueil", assessments: "Évaluations", labs: "Laboratoires", live: "En direct",
+    home: "Accueil", games: "Jeux", assessments: "Évaluations", labs: "Laboratoires", live: "En direct",
     progress: "Progrès", certificates: "Certificats", admin: "Admin",
     start: "Commencer", submit: "Soumettre", next: "Suivant", finish: "Terminer",
     correct: "Correct", tryAgain: "Réessayer", score: "Score", question: "Question",
@@ -111,7 +111,7 @@ const STRINGS = {
   },
   sw: {
     learn: "Soma", library: "Maktaba", tutors: "Walimu", profile: "Wasifu",
-    home: "Nyumbani", assessments: "Tathmini", labs: "Maabara", live: "Moja kwa moja",
+    home: "Nyumbani", games: "Michezo", assessments: "Tathmini", labs: "Maabara", live: "Moja kwa moja",
     progress: "Maendeleo", certificates: "Vyeti", admin: "Usimamizi",
     start: "Anza", submit: "Tuma", next: "Ifuatayo", finish: "Maliza",
     correct: "Sahihi", tryAgain: "Jaribu tena", score: "Alama", question: "Swali",
@@ -126,7 +126,7 @@ const STRINGS = {
   },
   ar: {
     learn: "تعلّم", library: "المكتبة", tutors: "المعلمون", profile: "الملف الشخصي",
-    home: "الرئيسية", assessments: "التقييمات", labs: "المختبرات", live: "مباشر",
+    home: "الرئيسية", games: "الألعاب", assessments: "التقييمات", labs: "المختبرات", live: "مباشر",
     progress: "التقدّم", certificates: "الشهادات", admin: "الإدارة",
     start: "ابدأ", submit: "إرسال", next: "التالي", finish: "إنهاء",
     correct: "صحيح", tryAgain: "حاول مرة أخرى", score: "النتيجة", question: "سؤال",

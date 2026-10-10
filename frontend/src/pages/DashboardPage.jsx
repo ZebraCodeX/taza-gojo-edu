@@ -12,6 +12,7 @@ import { useI18n } from "../i18n";
 const SUBJECT_ICON = { math: "🧮", english: "📖", science: "🔬", computing: "💻", physics: "🧲", electricity: "⚡" };
 
 const QUICK = [
+  { to: "/games", icon: "🎮", title: "Games", sub: "All game-based lessons" },
   { to: "/assessments", icon: "📝", title: "Assessments", sub: "Tests with instant feedback" },
   { to: "/labs", icon: "🧪", title: "Labs", sub: "Coding, circuits & science" },
   { to: "/live", icon: "🎥", title: "Live classes", sub: "1:1 and groups up to 15" },

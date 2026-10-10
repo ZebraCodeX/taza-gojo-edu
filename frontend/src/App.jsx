@@ -15,6 +15,7 @@ import ThemeToggle from "./components/ThemeToggle";
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const GamesPage = lazy(() => import("./pages/GamesPage"));
 const CoursePage = lazy(() => import("./pages/CoursePage"));
 const LessonPage = lazy(() => import("./pages/LessonPage"));
 const TutorsPage = lazy(() => import("./pages/TutorsPage"));
@@ -43,6 +44,7 @@ const NAV_GROUPS = [
     title: "Learn",
     items: [
       { to: "/dashboard", key: "home", icon: "🏠" },
+      { to: "/games", key: "games", icon: "🎮" },
       { to: "/library", key: "library", icon: "📚" },
     ],
   },
@@ -78,6 +80,7 @@ const MOBILE_TABS = [
 ];
 
 const MORE_LINKS = [
+  ["/games", "games", "🎮"],
   ["/library", "library", "📚"],
   ["/tutors", "tutors", "👩🏽‍🏫"],
   ["/progress", "progress", "📈"],
@@ -247,6 +250,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={isAuthed() ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
           <Route path="/dashboard" element={<RequireAuth><Layout role={role}><DashboardPage /></Layout></RequireAuth>} />
+          <Route path="/games" element={<RequireAuth><Layout role={role}><GamesPage /></Layout></RequireAuth>} />
           <Route path="/course/:slug" element={<RequireAuth><Layout role={role}><CoursePage /></Layout></RequireAuth>} />
           <Route path="/lesson/:id" element={<RequireAuth><Layout role={role}><LessonPage /></Layout></RequireAuth>} />
           <Route path="/assessments" element={<RequireAuth><Layout role={role}><AssessmentsPage /></Layout></RequireAuth>} />

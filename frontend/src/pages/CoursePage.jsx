@@ -27,7 +27,7 @@ export default function CoursePage() {
         } catch { /* meta is decorative */ }
       }
       try {
-        const { data } = await api.get(`/api/v1/courses/${slug}/`);
+        const { data } = await api.get(`/api/v1/courses/${slug}/catalog/`);
         setCatalog(Array.isArray(data) ? data : []);
         if (Array.isArray(data) && data[0]) setOpen(data[0].id);
       } catch {
