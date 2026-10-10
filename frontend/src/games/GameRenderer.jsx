@@ -6,6 +6,7 @@
 //   bubbles   -> a problem shows; pop the bubble with the right answer
 //   sequencing-> tap the steps in the correct order
 //   blockly   -> build a command list so the mascot reaches the goal
+//   shop      -> tap coins to pay the exact price for fruit (money + operations)
 //
 // Each engine runs entirely offline (no assets, no network) and hands progress
 // to the offline sync queue.
@@ -23,6 +24,7 @@ export default function GameRenderer({ lesson, onDone }) {
       {script.engine === "bubbles" && <BubblesEngine script={script} lesson={lesson} onDone={onDone} />}
       {script.engine === "sequencing" && <SequenceEngine script={script} lesson={lesson} onDone={onDone} />}
       {script.engine === "blockly" && <BlocklyEngine script={script} lesson={lesson} onDone={onDone} />}
+      {script.engine === "shop" && <ShopEngine script={script} lesson={lesson} onDone={onDone} />}
       {!script.engine && (
         <div className="card">
           <p>Lesson content is loading…</p>
@@ -40,6 +42,22 @@ function finished(lesson, stars, onDone) {
 
 function Stars({ n }) {
   return <span className="stars">{"★".repeat(n)}{"☆".repeat(3 - n)}</span>;
+}
+
+// Optional audio instructions (on-device TTS). Offline-safe: no-op when
+// speech synthesis is unavailable, which keeps pre-readers covered without
+// ever blocking play on network or audio assets.
+function speak(text) {
+  try {
+    if (typeof window !== "undefined" && window.speechSynthesis && text) {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.9;
+      window.speechSynthesis.speak(u);
+    }
+  } catch {
+    /* audio is best-effort only */
+  }
 }
 
 function Cage({ children }) {
@@ -162,6 +180,100 @@ function BubblesEngine({ script, lesson, onDone }) {
           <button key={v} className="bubble" onClick={() => tap(v)}>{v}</button>
         ))}
       </div>
+    </Cage>
+  );
+}
+
+/* ------------------- shop: tap coins to pay the exact price ----------------- */
+
+function ShopEngine({ script, lesson, onDone }) {
+  const [level, setLevel] = useState(0);
+  const [idx, setIdx] = useState(0);
+  const [tray, setTray] = useState([]);     // coins the child has chosen
+  const [slips, setSlips] = useState(0);    // over-pays / wrong confirms
+  const [done, setDone] = useState(false);
+
+  const cfg = script.levels[level] || script.levels[0];
+  const task = (cfg.tasks || [])[idx] || cfg.tasks[0];
+  const coins = cfg.coins || [1, 2, 5];
+  const total = task.price * task.qty;
+  const traySum = tray.reduce((a, c) => a + c, 0);
+
+  useEffect(() => {
+    // Audio-first: read the current request aloud when the task changes.
+    speak(`${task.qty} ${task.item} at ${task.price} each. You need ${total}.`);
+  }, [idx, level]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const addCoin = (c) => {
+    if (done) return;
+    if (traySum + c > total) {
+      setSlips((s) => s + 1); // gentle nudge, no penalty: nothing was lost
+    } else {
+      setTray((t) => [...t, c]);
+    }
+  };
+
+  const undo = () => setTray((t) => t.slice(0, -1));
+  const resetTray = () => setTray([]);
+
+  const pay = () => {
+    if (traySum < total || done) return;
+    if (traySum > total) {
+      setSlips((s) => s + 1);
+      return;
+    }
+    if (idx + 1 >= cfg.tasks.length) {
+      if (script.levels.length > level + 1) {
+        setSlips(0);
+        setTray([]);
+        setLevel((l) => l + 1);
+        setIdx(0);
+      } else {
+        setDone(true);
+        const stars = slips === 0 ? 3 : slips <= cfg.tasks.length ? 2 : 1;
+        finished(lesson, stars, onDone);
+      }
+    } else {
+      setTray([]);
+      setIdx((i) => i + 1);
+    }
+  };
+
+  return (
+    <Cage>
+      <div className="scoreboard">
+        Stall {level + 1} · purchase {idx + 1} of {cfg.tasks.length}
+      </div>
+      <div className="problem">
+        <span className="shop-emoji">{task.emoji || "🍎"}</span>
+        Buy {task.qty} {task.item} at {task.price} {script.currency || ""} each
+        <div className="muted small">You need {total}</div>
+      </div>
+
+      <div className="coins">
+        {coins.map((c) => (
+          <button key={c} className="coin" onClick={() => addCoin(c)}>{c}</button>
+        ))}
+      </div>
+
+      <div className="tray" aria-label={`You have ${traySum} of ${total}`}>
+        {tray.length === 0 && <span className="muted small">Tap coins…</span>}
+        {tray.map((c, i) => (
+          <span key={i} className="tray-coin">{c}</span>
+        ))}
+        <span className="tray-sum">= {traySum}</span>
+        {tray.length > 0 && (
+          <button className="btn sm ghost" onClick={undo} aria-label="remove one coin">⌫</button>
+        )}
+      </div>
+
+      {traySum > total && <p className="error small">That is too much — remove a coin.</p>}
+
+      <div className="shop-actions">
+        <button className="btn sm ghost" onClick={resetTray}>Clear</button>
+        <button className="btn primary" disabled={traySum !== total} onClick={pay}>Pay</button>
+      </div>
+      {done && <p className="ok small">Market closed for today — well done! 🌟</p>}
     </Cage>
   );
 }

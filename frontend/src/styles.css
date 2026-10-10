@@ -525,6 +525,17 @@ textarea.ta { resize: vertical; }
 .cmd { padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--card); font-size: 13px; cursor: pointer; }
 .blocklist { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
 .blocklist span { background: var(--primary); color: #fff; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 800; }
+.shop-emoji { display: block; font-size: 56px; line-height: 1.1; }
+.problem .muted { font-size: 16px; font-weight: 600; margin-top: 4px; }
+.coins { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 14px 0; }
+.coin { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 22%, transparent); font-size: 22px; font-weight: 800; cursor: pointer; }
+.coin:active { background: var(--accent); color: #fff; }
+.tray { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 52px; padding: 8px; border: 2px dashed var(--line); border-radius: 12px; margin: 4px auto 10px; max-width: 460px; }
+.tray-coin { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; }
+.tray-sum { font-weight: 800; margin-left: 6px; }
+.shop-actions { display: flex; gap: 10px; justify-content: center; margin-top: 6px; }
+.shop-actions .btn.primary { min-height: 48px; padding: 0 28px; font-size: 16px; }
+.ok { color: var(--ok); font-weight: 800; }
 
 /* ============================= lecture ============================= */
 .lecture { margin-bottom: 14px; }

@@ -62,13 +62,82 @@ CORE = [
                                 {"problems": [[7, 4], [6, 6], [9, 5]], "time": 20},
                             ],
                         },
-                        "questions": [
+"questions": [
                             {"kind": "fill", "prompt": "5 + 3 = ?", "answer": "8",
                              "hint": "Count five fingers, then add three more."},
                         ],
                     }
                 ],
-            }
+            },
+            {
+                "title": "Fruit Market",
+                "lessons": [
+                    {
+                        "title": "Fruit Market — Small Coins",
+                        "kind": "game",
+                        "xp": 20,
+                        "content": {
+                            "engine": "shop",
+                            "currency": "birr",
+                            "instructions": "Tap coins to pay the exact price for the fruit. Buy the right amount!",
+                            "levels": [
+                                {
+                                    "coins": [1, 2, 5],
+                                    "tasks": [
+                                        {"item": "lemon", "price": 2, "qty": 2, "emoji": "🍋"},
+                                        {"item": "banana", "price": 3, "qty": 1, "emoji": "🍌"},
+                                        {"item": "mango", "price": 3, "qty": 3, "emoji": "🥭"},
+                                        {"item": "guava", "price": 4, "qty": 2, "emoji": "🍐"},
+                                    ],
+                                },
+                                {
+                                    "coins": [1, 2, 5],
+                                    "tasks": [
+                                        {"item": "pineapple", "price": 4, "qty": 3, "emoji": "🍍"},
+                                        {"item": "papaya", "price": 5, "qty": 2, "emoji": "🧡"},
+                                    ],
+                                },
+                            ],
+                        },
+                        "questions": [
+                            {"kind": "fill", "prompt": "3 lemons cost 2 each. How much in total?",
+                             "answer": "6", "hint": "2 + 2 + 2, or 3 groups of 2."},
+                        ],
+                    },
+                    {
+                        "title": "Fruit Market — Bigger Coins",
+                        "kind": "game",
+                        "xp": 25,
+                        "content": {
+                            "engine": "shop",
+                            "currency": "birr",
+                            "instructions": "Use the big coins to pay exactly. Watch the total!",
+                            "levels": [
+                                {
+                                    "coins": [1, 5, 10],
+                                    "tasks": [
+                                        {"item": "tomato", "price": 6, "qty": 2, "emoji": "🍅"},
+                                        {"item": "avocado", "price": 4, "qty": 3, "emoji": "🥑"},
+                                        {"item": "watermelon", "price": 5, "qty": 2, "emoji": "🍉"},
+                                        {"item": "orange", "price": 7, "qty": 2, "emoji": "🍊"},
+                                    ],
+                                },
+                                {
+                                    "coins": [1, 5, 10],
+                                    "tasks": [
+                                        {"item": "grapes", "price": 8, "qty": 2, "emoji": "🍇"},
+                                        {"item": "apple", "price": 6, "qty": 3, "emoji": "🍎"},
+                                    ],
+                                },
+                            ],
+                        },
+                        "questions": [
+                            {"kind": "fill", "prompt": "2 oranges cost 7 each. How much in total?",
+                             "answer": "14", "hint": "7 + 7 = 14."},
+                        ],
+                    },
+                ],
+            },
         ],
     },
     {
