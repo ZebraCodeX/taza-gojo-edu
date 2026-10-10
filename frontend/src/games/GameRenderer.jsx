@@ -25,6 +25,7 @@ export default function GameRenderer({ lesson, onDone }) {
       {script.engine === "sequencing" && <SequenceEngine script={script} lesson={lesson} onDone={onDone} />}
       {script.engine === "blockly" && <BlocklyEngine script={script} lesson={lesson} onDone={onDone} />}
       {script.engine === "shop" && <ShopEngine script={script} lesson={lesson} onDone={onDone} />}
+      {script.engine === "match" && <MatchEngine script={script} lesson={lesson} onDone={onDone} />}
       {!script.engine && (
         <div className="card">
           <p>Lesson content is loading…</p>
@@ -370,4 +371,84 @@ function BlocklyEngine({ script, lesson, onDone }) {
       )}
     </Cage>
   );
+
+/* -------------------- match: find pairs ------------------- */
+
+function MatchEngine({ script, lesson, onDone }) {
+  const cfg = script.levels?.[0] || {};
+  const pairs = cfg.pairs || [
+    ["A", "Apple"],
+    ["B", "Ball"],
+  ];
+  const [cards, setCards] = useState([]);
+  const [flipped, setFlipped] = useState([]);
+  const [matched, setMatched] = useState(new Set());
+  const [moves, setMoves] = useState(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const deck = [];
+    pairs.forEach((p, i) => {
+      deck.push({ id: i * 2, pair: i, text: p[0], type: "a" });
+      deck.push({ id: i * 2 + 1, pair: i, text: p[1], type: "b" });
+    });
+    deck.sort(() => Math.random() - 0.5);
+    setCards(deck);
+    setFlipped([]);
+    setMatched(new Set());
+    setMoves(0);
+    setDone(false);
+  }, [script]);
+
+  const flip = (card) => {
+    if (done) return;
+    if (flipped.includes(card.id)) return;
+    if (matched.has(card.pair)) return;
+    const next = [...flipped, card.id];
+    setFlipped(next);
+    setMoves((m) => m + 1);
+    if (next.length === 2) {
+      const [a, b] = next.map((id) => cards.find((c) => c.id === id));
+      if (a && b && a.pair === b.pair) {
+        const mset = new Set(matched);
+        mset.add(a.pair);
+        setMatched(mset);
+        setFlipped([]);
+        if (mset.size === pairs.length) {
+          setDone(true);
+          const stars = moves <= pairs.length * 2 ? 3 : moves <= pairs.length * 3 ? 2 : 1;
+          finished(lesson, stars, onDone);
+        }
+      } else {
+        setTimeout(() => setFlipped([]), 700);
+      }
+    }
+  };
+
+  const isFlipped = (c) => flipped.includes(c.id) || matched.has(c.pair);
+  const isMatched = (c) => matched.has(c.pair);
+
+  return (
+    <Cage>
+      <div className="scoreboard">Matches: {matched.size} / {pairs.length} · Moves: {moves}</div>
+      <div className="match-grid cards">
+        {cards.map((c) => (
+          <button
+            key={c.id}
+            className={"match-card" + (isMatched(c) ? " matched" : "") + (isFlipped(c) ? " flipped" : "")}
+            onClick={() => flip(c)}
+            disabled={isFlipped(c)}
+          >
+            <span className="match-card-inner">
+              <span className="match-card-front">?</span>
+              <span className="match-card-back">{c.text}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+      {done && <p className="ok small">All matched — great job!</p>}
+    </Cage>
+  );
+}
+
 }

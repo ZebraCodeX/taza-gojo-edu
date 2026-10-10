@@ -19,7 +19,8 @@ const ENGINES = {
   sequencing: { label: "Sequencing", icon: "🔢", color: "#8957e5", blurb: "Put the steps in the correct order." },
   blockly: { label: "Blockly", icon: "🧩", color: "#1f6feb", blurb: "Build a command list to reach the goal." },
   shop: { label: "Shop", icon: "🛒", color: "#d29922", blurb: "Tap coins to pay the exact price." },
-  interactive: { label: "Interactive", icon: "✨", color: "#db2777", blurb: "Discover ideas with sliders and plots." },
+  match: { label: "Match", icon: "🧠", color: "#db2777", blurb: "Flip and match pairs to win." },
+  interactive: { label: "Interactive", icon: "✨", color: "#06b6d4", blurb: "Discover ideas with sliders and plots." },
 };
 const OTHER = { label: "Arcade", icon: "🎮", color: "#6d28d9", blurb: "Playful practice." };
 

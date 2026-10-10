@@ -35,6 +35,37 @@ CORE = [
                              "options": ["A", "B", "D", "F"], "answer": "D",
                              "hint": "Say the alphabet out loud: A, B, C, ..."},
                         ],
+                    },
+                    {
+                        "title": "Letter–Word Match",
+                        "kind": "game",
+                        "xp": 20,
+                        "content": {
+                            "engine": "match",
+                            "instructions": "Flip cards to match letters with words.",
+                            "levels": [
+                                {"pairs": [["A", "Apple"], ["B", "Ball"], ["C", "Cat"], ["D", "Dog"]]}
+                            ]
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Which starts with B?", "options": ["Apple", "Ball", "Cat", "Dog"], "answer": "Ball", "hint": "Say the words aloud."}
+                        ]
+                    },
+                    {
+                        "title": "Sight Words Catch",
+                        "kind": "game",
+                        "xp": 15,
+                        "content": {
+                            "engine": "catch",
+                            "instructions": "Tap the sight word when it falls.",
+                            "levels": [
+                                {"targets": ["the", "and", "is", "it"], "rounds": 5},
+                                {"targets": ["for", "you", "in", "we"], "rounds": 5}
+                            ]
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Which is a sight word?", "options": ["xylophone", "the", "giraffe"], "answer": "the", "hint": "Common words to recognise quickly."}
+                        ]
                     }
                 ],
             }
@@ -166,6 +197,36 @@ CORE = [
                              "options": ["Sun", "Wind", "Moon"], "answer": "Sun",
                              "hint": "Think about what heats the water."},
                         ],
+                    },
+                    {
+                        "title": "Plant Life Cycle",
+                        "kind": "game",
+                        "xp": 15,
+                        "content": {
+                            "engine": "sequencing",
+                            "instructions": "Put the stages of a plant life cycle in order.",
+                            "levels": [
+                                {"steps": ["seed", "germination", "sprout", "seedling", "adult plant", "flower", "fruit with seeds"]}
+                            ]
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Which comes first?", "options": ["sprout", "seed", "flower"], "answer": "seed", "hint": "All plants start as this."}
+                        ]
+                    },
+                    {
+                        "title": "Food Chain Order",
+                        "kind": "game",
+                        "xp": 15,
+                        "content": {
+                            "engine": "sequencing",
+                            "instructions": "Arrange the food chain in the right order.",
+                            "levels": [
+                                {"steps": ["grass", "grasshopper", "frog", "snake", "eagle"]}
+                            ]
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Who is the producer?", "options": ["frog", "grass", "eagle"], "answer": "grass", "hint": "Producers make their own food."}
+                        ]
                     }
                 ],
             }
@@ -197,6 +258,22 @@ CORE = [
                              "options": ["Moves back", "Points right", "Jumping"], "answer": "Points right",
                              "hint": "Think of your own body: turning right points you which way?"},
                         ],
+                    },
+                    {
+                        "title": "Maze Runner",
+                        "kind": "game",
+                        "xp": 20,
+                        "content": {
+                            "engine": "blockly",
+                            "instructions": "Use forward and turns to guide the mascot to the goal.",
+                            "levels": [
+                                {"grid": 4, "goal": "3,0"},
+                                {"grid": 5, "goal": "4,2"}
+                            ]
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Turning helps you change...", "options": ["color", "direction", "size"], "answer": "direction", "hint": "To avoid walls, change this."}
+                        ]
                     }
                 ],
             }
@@ -230,6 +307,21 @@ CORE = [
                             {"kind": "numeric", "prompt": "A car travels 100 m in 20 s. What is its average speed in m/s?",
                              "answer": "5", "hint": "speed = distance / time"},
                         ],
+                    },
+                    {
+                        "title": "Push vs Pull Match",
+                        "kind": "game",
+                        "xp": 15,
+                        "content": {
+                            "engine": "match",
+                            "instructions": "Match actions to push or pull.",
+                            "levels": [
+                                {"pairs": [["Pushing a door", "Push"], ["Pulling a wagon", "Pull"], ["Kicking a ball", "Push"], ["Opening a drawer", "Pull"]]}
+                            ]
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Kicking a ball is a...", "options": ["Pull", "Push"], "answer": "Push", "hint": "Direction of force."}
+                        ]
                     },
                     {
                         "title": "Energy Transfers",
@@ -281,6 +373,21 @@ CORE = [
                              "options": ["Copper", "Rubber", "Plastic"], "answer": "Copper",
                              "hint": "Think about the wires inside a cable."},
                         ],
+                    },
+                    {
+                        "title": "Circuit Symbols Match",
+                        "kind": "game",
+                        "xp": 20,
+                        "content": {
+                            "engine": "match",
+                            "instructions": "Match circuit symbols with their names.",
+                            "levels": [
+                                {"pairs": [["🔋", "Battery"], ["💡", "Bulb"], ["⏻", "Switch"], ["〰️", "Resistor"]]}
+                            ]
+                        },
+                        "questions": [
+                            {"kind": "mcq", "prompt": "Which symbol represents a bulb?", "options": ["⏻", "💡", "🔋"], "answer": "💡", "hint": "It gives light."}
+                        ]
                     },
                     {
                         "title": "Ohm's Law Bubbles",

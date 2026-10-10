@@ -582,6 +582,24 @@ textarea.ta { resize: vertical; }
   .arcade-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
 }
 
+.match-card {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.match-card:disabled { cursor: default; }
+.match-card.matched { border-color: color-mix(in srgb, var(--ok) 50%, var(--line)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ok) 25%, transparent); }
+.match-card-inner { position: absolute; inset: 0; transition: transform 0.25s ease; transform-style: preserve-3d; }
+.match-card.flipped .match-card-inner { transform: rotateY(180deg); }
+.match-card-front,.match-card-back { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 800; font-size: 18px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.match-card-front { background: var(--bg-2); color: var(--ink-2); }
+.match-card-back { background: var(--card); color: var(--ink); transform: rotateY(180deg); }
 /* ============================= lecture ============================= */
 .lecture { margin-bottom: 14px; }
 .lecture h2 { margin: 0 0 2px; }
@@ -652,6 +670,7 @@ textarea.ta { resize: vertical; }
 .order-list { padding-left: 20px; display: grid; gap: 8px; }
 .order-list li { display: flex; justify-content: space-between; gap: 8px; }
 .match-grid { display: grid; gap: 10px; }
+.match-grid.cards { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); max-width: 520px; margin: 12px auto 0; }
 .match-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
 .match-left { font-weight: 700; }
 .feedback { margin-top: 14px; display: grid; gap: 8px; }
